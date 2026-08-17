@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A conversation · Bleuprint</title>
+  <meta name="description" content="You talk. Kalena listens, names the largest bottleneck, and tells you the first move.">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@200;300&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@400&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">Bleuprint</a>
+      <span class="status">Flint, MI · Four diagnosis spots open</span>
+    </div>
+    <div class="hairline"><div id="bp-rule"></div></div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <p class="eyebrow section-label">Consult</p>
+        <h1 class="display">A conversation</h1>
+      </div>
+    </section>
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="prose">
+          <p>You talk. Kalena listens to the business plan, names the largest bottleneck she hears, and tells you the first move. That is the whole call.</p>
+          <p>The diagnosis is $199. If we decide to work together, it is credited toward your first $2,000/month engagement.</p>
+          <p><a class="btn btn-block btn-block-m" href="https://calendly.com/kalenagardner07/30min" target="_blank" rel="noopener">Book your diagnosis</a></p>
+          <p class="note">Use the form below only if you would rather send context before booking.</p>
+        </div>
+
+        <form id="consult-form" style="margin-top:48px;max-width:32rem;display:grid;gap:18px">
+          <input type="hidden" name="_subject" value="Bleuprint conversation request">
+          <div class="field">
+            <label class="label" for="c-name">Name</label>
+            <input id="c-name" name="name" type="text" required autocomplete="name">
+          </div>
+          <div class="field">
+            <label class="label" for="c-email">Email</label>
+            <input id="c-email" name="email" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label class="label" for="c-biz">Business</label>
+            <input id="c-biz" name="business" type="text" required>
+          </div>
+          <div class="field">
+            <label class="label" for="c-stuck">What is stuck (two or three sentences)</label>
+            <textarea id="c-stuck" name="what_is_stuck" required maxlength="800"></textarea>
+          </div>
+          <div class="field">
+            <label class="label" for="c-days">Preferred days</label>
+            <input id="c-days" name="preferred_days" type="text" required placeholder="Tue and Thu mornings">
+          </div>
+          <p class="err" id="c-err">Please complete each field.</p>
+          <button class="btn btn-block btn-block-m" type="submit">Send the request</button>
+          <p class="ok body" id="c-ok">Sent. Kalena will reply with a time. You can also <a href="diagnosis.html">run the free diagnosis</a> while you wait.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner mono">
+      <a class="foot-brand" href="index.html">Bleuprint</a>
+      <a href="diagnosis.html">Diagnosis</a>
+      <a href="about.html">About</a>
+      <a href="consult.html">A conversation</a>
+      <a href="consult.html">Work with me</a>
+      <a href="privacy.html">Privacy</a>
+      <span class="foot-note">Bleuprint LLC · Michigan · Flint</span>
+    </div>
+  </footer>
+
+  <script src="site.js"></script>
+  <script>
+    document.getElementById("consult-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = document.getElementById("c-name").value.trim();
+      var email = document.getElementById("c-email").value.trim();
+      var biz = document.getElementById("c-biz").value.trim();
+      var stuck = document.getElementById("c-stuck").value.trim();
+      var days = document.getElementById("c-days").value.trim();
+      var err = document.getElementById("c-err");
+      if (!name || !email || !biz || !stuck || !days) { err.classList.add("is-on"); return; }
+      err.classList.remove("is-on");
+      var payload = {
+        _subject: "Bleuprint conversation request",
+        name: name,
+        email: email,
+        business: biz,
+        what_is_stuck: stuck,
+        preferred_days: days
+      };
+      try {
+        localStorage.setItem("bleuprint-consult", JSON.stringify(Object.assign({ at: new Date().toISOString() }, payload)));
+      } catch (x) {}
+      fetch("https://formsubmit.co/ajax/kalenagardner07@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(function () {});
+      document.getElementById("c-ok").classList.add("is-on");
+    });
+  </script>
+</body>
+</html>

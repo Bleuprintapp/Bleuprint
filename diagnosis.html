@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnosis · Bleuprint</title>
+  <meta name="description" content="Two questions. No signup. Then complete The Ten for a free diagnosis.">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@200;300&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@400&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">Bleuprint</a>
+      <span class="status">Flint, MI · 10 founding seats</span>
+    </div>
+    <div class="hairline"><div id="bp-rule"></div></div>
+  </header>
+
+  <main id="main">
+    <section class="night" style="padding:72px 0 56px">
+      <div class="wrap">
+        <hr class="gold-rule">
+        <h1 class="display" style="font-size:clamp(40px,10vw,80px);max-width:12ch">The Ten</h1>
+        <p class="body" style="margin-top:20px;color:rgba(247,248,246,.72);max-width:42ch">Two questions. No signup. An email lets you complete the rest. The diagnosis is complete and free.</p>
+      </div>
+    </section>
+
+    <section class="section" id="flow">
+      <div class="wrap" style="max-width:40rem">
+        <p class="progress mono" id="progress">Question 1 of 2</p>
+
+        <div class="q is-on" data-step="q1">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">Of your last ten customers, how many came from something you posted?</h2>
+          <div class="choices" id="q1-choices" role="group" aria-label="Number from 0 to 10"></div>
+        </div>
+
+        <div class="q" data-step="q2">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">If someone searches your category in your city right now, do you show up?</h2>
+          <div class="choices" id="q2-choices" role="group">
+            <button type="button" class="choice" data-val="Yes">Yes</button>
+            <button type="button" class="choice" data-val="No">No</button>
+            <button type="button" class="choice" data-val="I do not know">I do not know</button>
+          </div>
+        </div>
+
+        <div class="q" data-step="email">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:16ch;margin:0 0 12px">Complete The Ten</h2>
+          <p class="body slate" style="margin:0 0 28px">Name, business, and email. Then eight more questions. You can also <a href="consult.html">book a conversation</a>.</p>
+          <div class="field" style="margin-bottom:16px">
+            <label class="label" for="d-name">Name</label>
+            <input id="d-name" name="name" type="text" required autocomplete="name">
+          </div>
+          <div class="field" style="margin-bottom:16px">
+            <label class="label" for="d-biz">Business name</label>
+            <input id="d-biz" name="business" type="text" required>
+          </div>
+          <div class="field" style="margin-bottom:24px">
+            <label class="label" for="d-email">Email</label>
+            <input id="d-email" name="email" type="email" required autocomplete="email">
+          </div>
+          <button type="button" class="btn btn-block btn-block-m" id="email-next">Continue</button>
+        </div>
+
+        <div class="q" data-step="q3">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">Do documented results exist — real names, numbers, before and after?</h2>
+          <div class="choices yn" data-key="q3"></div>
+        </div>
+        <div class="q" data-step="q4">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">Has anyone with real credibility publicly vouched for you?</h2>
+          <div class="choices yn" data-key="q4"></div>
+        </div>
+        <div class="q" data-step="q5">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">Do you look and sound the same everywhere someone finds you?</h2>
+          <div class="choices yn" data-key="q5"></div>
+        </div>
+        <div class="q" data-step="q6">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">Could a stranger say in one sentence what you're known for?</h2>
+          <div class="choices yn" data-key="q6"></div>
+        </div>
+        <div class="q" data-step="q7">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">Do your price tiers match different situations, or just different budgets?</h2>
+          <div class="choices yn" data-key="q7"></div>
+        </div>
+        <div class="q" data-step="q8">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">If someone tries you for free, is there a clear next step to pay?</h2>
+          <div class="choices yn" data-key="q8"></div>
+        </div>
+        <div class="q" data-step="q9">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">Could you point to one piece of content everything else could be cut down from?</h2>
+          <div class="choices yn" data-key="q9"></div>
+        </div>
+        <div class="q" data-step="q10">
+          <h2 class="display-m" style="font-size:clamp(28px,6vw,40px);max-width:20ch;margin:0 0 24px">Do the first three seconds of your content say what changes for the viewer, rather than just naming the topic?</h2>
+          <div class="choices yn" data-key="q10"></div>
+        </div>
+
+        <p class="err" id="d-err">Please answer to continue.</p>
+
+        <div class="result" id="result">
+          <p class="eyebrow section-label">Your diagnosis</p>
+          <p class="display-m synthesis" id="synthesis"></p>
+          <div class="result-block">
+            <h3>Trust and Proof</h3>
+            <p class="body" id="bucket-trust"></p>
+          </div>
+          <div class="result-block">
+            <h3>Category and Offer</h3>
+            <p class="body" id="bucket-offer"></p>
+          </div>
+          <div class="result-block">
+            <h3>Reach and Engine</h3>
+            <p class="body" id="bucket-reach"></p>
+          </div>
+          <p class="body" style="margin:32px 0 24px">This diagnosis is complete and free. If you want a conversation after this, request one.</p>
+          <a class="btn btn-block btn-block-m" href="consult.html">Request a conversation</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner mono">
+      <a class="foot-brand" href="index.html">Bleuprint</a>
+      <a href="diagnosis.html">Diagnosis</a>
+      <a href="about.html">About</a>
+      <a href="consult.html">A conversation</a>
+      <a href="consult.html">Work with me</a>
+      <a href="privacy.html">Privacy</a>
+      <span class="foot-note">Bleuprint LLC · Michigan · Flint</span>
+    </div>
+  </footer>
+
+  <script src="site.js"></script>
+  <script src="diagnosis.js"></script>
+</body>
+</html>

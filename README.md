@@ -1,13 +1,12 @@
 # Bleuprint
 
-The public Bleuprint website and founder workspace prototype.
+The public Bleuprint website.
 
 ## Pages
 
 - `index.html` — public homepage, booking call to action, and client review form
 - `diagnosis.html` — self-guided 10-question diagnosis
 - `consult.html` — $199 diagnosis booking page
-- `workspace-plan-v2.dc.html` — founder workspace prototype
 
 The site is plain HTML, CSS, and JavaScript. It is ready to deploy as a static site.
 
@@ -18,4 +17,4 @@ The site is plain HTML, CSS, and JavaScript. It is ready to deploy as a static s
 
 ## Privacy
 
-Do not add client folders, private strategy documents, or exports to this public repository.
+Do not add client folders, founder workspaces, private strategy documents, or exports to this public repository.
