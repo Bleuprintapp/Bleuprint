@@ -52,20 +52,4 @@
     drift();
   }
 
-  var portalTabs = document.querySelectorAll("[data-portal-tab]");
-  portalTabs.forEach(function (tab) {
-    tab.addEventListener("click", function () {
-      var selectedId = tab.getAttribute("data-portal-tab");
-      portalTabs.forEach(function (candidate) {
-        var active = candidate === tab;
-        candidate.classList.toggle("is-on", active);
-        candidate.setAttribute("aria-selected", active ? "true" : "false");
-      });
-      document.querySelectorAll(".portal-panel").forEach(function (panel) {
-        var active = panel.id === selectedId;
-        panel.classList.toggle("is-on", active);
-        panel.hidden = !active;
-      });
-    });
-  });
 })();
