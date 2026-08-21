@@ -6,7 +6,6 @@ export default function SignInPage() {
       <a className="auth-brand" href="/index.html">Bleuprint</a>
       <section className="auth-shell">
         <div className="auth-intro">
-          <p className="portal-kicker">Client and admin login</p>
           <h1>Return to your Bleuprint workspace.</h1>
           <p>Sign in with the email connected to your Bleuprint account.</p>
         </div>
