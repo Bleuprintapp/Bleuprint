@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leave a review · Bleuprint</title>
+  <meta name="description" content="Share what changed after working with Bleuprint.">
+  <meta name="robots" content="noindex,follow">
+  <link rel="canonical" href="https://bleuprintco.com/review.html">
+  <link rel="icon" href="assets/brand/bleuprint-mark.jpg">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@200;300&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header"><div class="header-inner"><a class="brand" href="index.html">Bleuprint</a><nav class="main-nav" aria-label="Main navigation"><a href="portfolio.html">Portfolio</a><a href="index.html#services">Services</a><a href="diagnosis.html">Self-check</a><a aria-current="page" href="review.html">Leave a review</a><a href="/portal">Client workspace</a><a class="nav-cta" href="consult.html">Book diagnosis</a></nav></div><div class="hairline"><div id="bp-rule"></div></div></header>
+  <main id="main">
+    <section class="page-hero review-hero"><div class="wrap"><p class="eyebrow section-label">Client review</p><h1 class="display">What changed after our work together?</h1><p class="body">Specific is useful. A result, decision, new way of working, or moment of clarity all count.</p></div></section>
+    <section class="section review-page"><div class="wrap"><form id="review-form" class="review-form">
+      <input type="hidden" name="_subject" value="Bleuprint client review">
+      <div class="field"><label class="label" for="r-name">Name</label><input id="r-name" name="name" type="text" required autocomplete="name"></div>
+      <div class="field"><label class="label" for="r-email">Email</label><input id="r-email" name="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label class="label" for="r-business">Business</label><input id="r-business" name="business" type="text"></div>
+      <div class="field"><label class="label" for="r-url">Business website or social link <span class="slate">(optional)</span></label><input id="r-url" name="business_url" type="url" inputmode="url" placeholder="https://"></div>
+      <div class="field"><label class="label" for="r-review">What changed?</label><textarea id="r-review" name="review" required maxlength="1600" placeholder="Before we worked together… After…"></textarea></div>
+      <fieldset class="permission-box"><legend class="label">Sharing permission</legend><label class="body check-row"><input id="r-quote" name="permission_to_quote" type="checkbox" value="Yes"> You may quote this review publicly with my first name and business name.</label><label class="body check-row"><input id="r-link" name="permission_to_link" type="checkbox" value="Yes"> You may publicly link to my business.</label></fieldset>
+      <p class="body slate">Your email is used only to verify the review and will not be published.</p>
+      <p class="err" id="r-err">Please add your name, email, and review.</p>
+      <button class="btn btn-block" type="submit">Send my review</button>
+      <p class="ok body" id="r-ok" role="status">Received. Thank you for putting the change into words.</p>
+    </form></div></section>
+  </main>
+  <footer class="site-footer"><div class="footer-inner mono"><a class="foot-brand" href="index.html">Bleuprint</a><a href="portfolio.html">Portfolio</a><a href="consult.html">Book a diagnosis</a><a href="privacy.html">Privacy</a><span class="foot-note">Bleuprint LLC · Michigan · Flint</span></div></footer>
+  <script src="site.js"></script>
+  <script src="review.js"></script>
+</body>
+</html>

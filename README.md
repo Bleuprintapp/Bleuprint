@@ -4,7 +4,9 @@ The public Bleuprint website.
 
 ## Pages
 
-- `index.html` — public homepage, booking call to action, and client review form
+- `index.html` — public homepage, services, proof, and $199 diagnosis pathway
+- `portfolio.html` — native responsive portfolio with supplied videos and analytics
+- `review.html` — direct client review form with clear publishing permissions
 - `diagnosis.html` — self-guided 10-question diagnosis
 - `consult.html` — $199 diagnosis booking page
 
