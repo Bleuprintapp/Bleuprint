@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$199 Brand Diagnosis for Founders | Bleuprint</title>
+  <meta name="description" content="Book a focused $199 Bleuprint diagnosis to identify the real marketing bottleneck and leave with a clear, sequenced 30-day plan.">
+  <link rel="canonical" href="https://bleuprintco.com/consult.html">
+  <link rel="icon" href="assets/brand/bleuprint-mark.jpg">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bleuprint">
+  <meta property="og:title" content="$199 Brand Diagnosis for Founders | Bleuprint">
+  <meta property="og:description" content="Identify the real bottleneck and leave with a clear 30-day plan.">
+  <meta property="og:url" content="https://bleuprintco.com/consult.html">
+  <meta property="og:image" content="https://bleuprintco.com/assets/brand/canva-brain-cutout.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="$199 Brand Diagnosis for Founders | Bleuprint">
+  <meta name="twitter:description" content="Identify the real bottleneck and leave with a clear 30-day plan.">
+  <meta name="twitter:image" content="https://bleuprintco.com/assets/brand/canva-brain-cutout.png">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@200;300&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@400&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">Bleuprint</a>
+      <nav class="main-nav" aria-label="Main navigation"><a href="portfolio.html">Portfolio</a><a href="index.html#services">Services</a><a href="diagnosis.html">Self-check</a><a href="review.html">Leave a review</a><a href="/portal">Client workspace</a><a class="nav-cta" aria-current="page" href="consult.html">Book diagnosis</a></nav>
+    </div>
+    <div class="hairline"><div id="bp-rule"></div></div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <p class="eyebrow section-label">Start here · $199</p>
+        <h1 class="display">Book your diagnosis</h1>
+      </div>
+    </section>
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="prose">
+          <p>Bleuprint reviews the evidence around your brand, offer, content, customer path, and current goals. We meet for 45 minutes, identify the constraint that matters most, and sequence the next moves.</p>
+          <p>You receive a written 30-day plan within two business days. The diagnosis is $199 and is credited if we decide to continue together.</p>
+          <p class="note">Ongoing support includes a monthly strategy re-evaluation. One-on-one work includes weekly calls and hands-on support alongside you. The scope and investment are decided only after the diagnosis shows what you actually need.</p>
+        </div>
+
+        <form id="consult-form" style="margin-top:48px;max-width:32rem;display:grid;gap:18px">
+          <input type="hidden" name="_subject" value="Bleuprint conversation request">
+          <div class="field">
+            <label class="label" for="c-name">Name</label>
+            <input id="c-name" name="name" type="text" required autocomplete="name">
+          </div>
+          <div class="field">
+            <label class="label" for="c-email">Email</label>
+            <input id="c-email" name="email" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label class="label" for="c-biz">Business</label>
+            <input id="c-biz" name="business" type="text" required>
+          </div>
+          <div class="field">
+            <label class="label" for="c-stuck">What feels stuck right now?</label>
+            <textarea id="c-stuck" name="what_is_stuck" required maxlength="800" placeholder="Tell me what is happening, what you have tried, and what needs to change."></textarea>
+          </div>
+          <div class="field">
+            <label class="label" for="c-days">Preferred days</label>
+            <input id="c-days" name="preferred_days" type="text" required placeholder="Tue and Thu mornings">
+          </div>
+          <p class="err" id="c-err">Please complete each field.</p>
+          <button class="btn btn-block btn-block-m" type="submit">Request the $199 diagnosis</button>
+          <p class="ok body" id="c-ok">Received. Kalena will reply with fit, availability, and payment details. You can also <a href="diagnosis.html">run the free self-check</a> while you wait.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner mono">
+      <a class="foot-brand" href="index.html">Bleuprint</a>
+      <a href="portfolio.html">Work</a>
+      <a href="diagnosis.html">Self-check</a>
+      <a href="about.html">About</a>
+      <a href="review.html">Leave a review</a>
+      <a href="privacy.html">Privacy</a>
+      <span class="foot-note">Bleuprint LLC · Michigan · Flint</span>
+    </div>
+  </footer>
+
+  <script src="site.js"></script>
+  <script>
+    document.getElementById("consult-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = document.getElementById("c-name").value.trim();
+      var email = document.getElementById("c-email").value.trim();
+      var biz = document.getElementById("c-biz").value.trim();
+      var stuck = document.getElementById("c-stuck").value.trim();
+      var days = document.getElementById("c-days").value.trim();
+      var err = document.getElementById("c-err");
+      if (!name || !email || !biz || !stuck || !days) { err.classList.add("is-on"); return; }
+      err.classList.remove("is-on");
+      var payload = {
+        _subject: "Bleuprint conversation request",
+        name: name,
+        email: email,
+        business: biz,
+        what_is_stuck: stuck,
+        preferred_days: days
+      };
+      try {
+        localStorage.setItem("bleuprint-consult", JSON.stringify(Object.assign({ at: new Date().toISOString() }, payload)));
+      } catch (x) {}
+      fetch("https://formsubmit.co/ajax/kalenagardner07@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(function () {});
+      document.getElementById("c-ok").classList.add("is-on");
+    });
+  </script>
+</body>
+</html>
