@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Passport Build Roadmap</title>
+<style>body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style id="app-style">
+  :root{
+    --ground:#1A1E1F; --ground-deep:#141718; --surface:#232729; --surface-2:#2A2F31;
+    --line:#343A3C; --paper:#F9F9F8; --dim:#9AA2A4; --dim-2:#6E7678;
+    --cyan:#19B7DB; --signal:#3FD7DC; --gold:#A29376; --done:#3FD7DC;
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--ground);color:var(--paper);font-family:'Inter',system-ui,-apple-system,sans-serif;line-height:1.6;margin:0;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{margin:0;font-weight:600;letter-spacing:-0.02em;text-wrap:balance;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 28px;}
+  @media (max-width:640px){.wrap{padding:0 16px;}}
+
+  /* header */
+  header.top{background:var(--ground-deep);border-bottom:1px solid var(--line);position:relative;overflow:hidden;}
+  header.top .art{position:absolute;inset:0;width:100%;height:100%;opacity:0.85;}
+  header.top .scrim{position:absolute;inset:0;background:linear-gradient(90deg,#141718 0%,#141718 40%,rgba(20,23,24,0.55) 66%,rgba(20,23,24,0) 84%);}
+  header.top .inner{position:relative;z-index:2;padding:30px 0 36px;}
+  .lockup{display:flex;align-items:center;gap:11px;margin-bottom:26px;}
+  .lockup .wm{font-size:19px;letter-spacing:-0.025em;line-height:1;}
+  .lockup .wm .y{font-weight:300;} .lockup .wm .p{font-weight:700;}
+  .mark{width:30px;height:30px;flex:none;}
+  h1.title{font-size:clamp(30px,5vw,46px);font-weight:300;letter-spacing:-0.04em;line-height:1;}
+  h1.title b{font-weight:700;}
+  .subtitle{color:var(--dim);font-size:14px;margin-top:12px;max-width:56ch;}
+
+  /* progress summary */
+  .summary{display:flex;align-items:center;gap:18px;margin-top:26px;flex-wrap:wrap;max-width:520px;}
+  .bigcount{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--dim);letter-spacing:0.06em;}
+  .bigcount b{color:var(--paper);font-size:22px;font-weight:500;}
+  .bar{flex:1;min-width:180px;height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden;}
+  .bar i{display:block;height:100%;background:var(--signal);width:0;transition:width .3s ease;}
+  .savestate{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim-2);margin-top:10px;}
+  .savestate.on{color:var(--signal);}
+
+  /* timeline */
+  .timeline-band{border-bottom:1px solid var(--line);background:var(--ground);position:sticky;top:0;z-index:20;}
+  .timeline{display:flex;gap:0;overflow-x:auto;padding:16px 28px;max-width:1000px;margin:0 auto;scrollbar-width:none;}
+  .timeline::-webkit-scrollbar{display:none;}
+  @media (max-width:640px){.timeline{padding:14px 16px;}}
+  .node{flex:1;min-width:150px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;background:none;border:none;padding:0 14px 0 0;cursor:pointer;text-align:left;font-family:inherit;color:inherit;position:relative;}
+  .node:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:3px;}
+  .node .track{position:absolute;top:15px;left:32px;right:0;height:1px;background:var(--line);}
+  .node:last-child .track{display:none;}
+  .node .ring{width:32px;height:32px;flex:none;position:relative;z-index:2;}
+  .node .lbl{font-size:12.5px;font-weight:500;letter-spacing:-0.01em;line-height:1.3;}
+  .node .meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim-2);letter-spacing:0.06em;}
+  .node.active .lbl{color:var(--signal);}
+
+  /* filters */
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:26px 0 6px;}
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:var(--dim);background:none;border:1px solid var(--line);border-radius:20px;padding:5px 12px;cursor:pointer;}
+  .chip:hover{color:var(--paper);border-color:var(--dim-2);}
+  .chip.on{color:var(--ground-deep);background:var(--paper);border-color:var(--paper);font-weight:500;}
+  .chip:focus-visible{outline:2px solid var(--signal);outline-offset:2px;}
+
+  /* phases */
+  .phase{padding:34px 0 10px;border-top:1px solid var(--line);margin-top:26px;scroll-margin-top:96px;}
+  .phase:first-of-type{border-top:none;margin-top:6px;}
+  .phase-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;}
+  .phase-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gold);letter-spacing:0.1em;}
+  .phase-head h2{font-size:clamp(24px,3.6vw,34px);font-weight:700;letter-spacing:-0.035em;}
+  .phase-when{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim-2);letter-spacing:0.08em;text-transform:uppercase;}
+  .phase-why{color:var(--dim);font-size:14px;max-width:62ch;margin:10px 0 20px;}
+
+  /* task rows */
+  .tasks{border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .task{display:flex;gap:14px;padding:15px 16px;background:var(--surface);border-bottom:1px solid var(--line);align-items:flex-start;cursor:pointer;transition:background .12s;}
+  .task:last-child{border-bottom:none;}
+  .task:hover{background:var(--surface-2);}
+  .task:focus-visible{outline:2px solid var(--signal);outline-offset:-2px;}
+  .task .box{width:17px;height:17px;flex:none;margin-top:2px;border:1.5px solid var(--dim-2);border-radius:3px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .task .box svg{width:11px;height:11px;opacity:0;transform:scale(.6);transition:all .15s;}
+  .task.done .box{background:var(--done);border-color:var(--done);}
+  .task.done .box svg{opacity:1;transform:scale(1);}
+  .task .body{flex:1;min-width:0;}
+  .task .t{display:block;font-size:14.5px;font-weight:500;letter-spacing:-0.01em;}
+  .task .d{display:block;}
+  .task.done .t{color:var(--dim-2);text-decoration:line-through;text-decoration-color:var(--dim-2);}
+  .task .d{font-size:12.5px;color:var(--dim);margin-top:4px;}
+  .task.done .d{color:var(--dim-2);}
+  .task .side{display:flex;gap:8px;align-items:center;flex:none;padding-top:1px;}
+  @media (max-width:600px){
+    .task{flex-wrap:wrap;}
+    .task .side{width:100%;padding-left:31px;margin-top:6px;}
+  }
+  .owner{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;border:1px solid var(--line);color:var(--dim);white-space:nowrap;}
+  .owner.k{border-color:#3F6E72;color:#7FD3D8;}
+  .owner.p{border-color:#6E6247;color:#C6B287;}
+  .due{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim-2);white-space:nowrap;}
+
+  .note{border-left:2px solid var(--gold);padding:2px 0 2px 14px;margin:18px 0 4px;}
+  .note .h{font-size:14px;font-weight:600;margin-bottom:3px;}
+  .note p{font-size:13px;color:var(--dim);margin:0;}
+
+  footer{border-top:1px solid var(--line);margin-top:44px;padding:24px 0 60px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim-2);letter-spacing:0.04em;line-height:1.8;}
+  .empty{padding:26px;color:var(--dim-2);font-size:13.5px;text-align:center;border:1px dashed var(--line);border-radius:4px;}
+</style>
+
+<div id="root"></div>
+
+<script id="state" type="application/json">{"v":1,"done":{}}</script>
+
+<script id="app-script">
+(function(){
+  var PHASES = [
+    { id:"p1", num:"01", name:"Align the story", when:"Today", why:"Three overlapping documents are in play right now. Nothing goes out wide until there is one canonical version of each.",
+      tasks:[
+        {id:"t101", t:"Paris signs off the brand guide", d:"The brand guide is the document of record. Sign-off means the three open decisions below are settled and it stops being a draft.", o:"P", due:"8 Sep", flag:true},
+        {id:"t102", t:"Publish the standalone Go To Market document", d:"The GTM half of the combined doc, pulled out and finished on its own: ICPs, offer, channels, outreach, sprint cadence.", o:"K", due:"8 Sep"},
+        {id:"t107", t:"Build the content calendar", d:"Daily posts across LinkedIn, Instagram, and TikTok, mapped to the six content pillars and the proof ladder.", o:"K", due:"8 Sep"},
+        {id:"t103", t:"Settle the color set", d:"Strategy doc says Ink #181818 and Cyan #19B7DB. The shipped deck runs #1A1E1F and #3FD7DC. Pick one and rebuild the loser.", o:"Both", due:"8 Sep"},
+        {id:"t104", t:"Confirm the typeface on record", d:"Paris checks what the site actually loads and whether the wordmark is a licensed grotesque.", o:"P", due:"8 Sep"},
+        {id:"t105", t:"Decide what Contour Gold is allowed to do", d:"Permanent second accent, or scenery that stays inside deck imagery.", o:"Both", due:"8 Sep"},
+        {id:"t106", t:"Audit live profiles against the brand guide", d:"Instagram, TikTok, LinkedIn company page. Same mark, same wordmark, same bio line.", o:"K", due:"8 Sep"}
+      ]},
+    { id:"p2", num:"02", name:"The paperwork", when:"8 to 12 Sep", why:"Everything an investor, an accelerator, or a grant reviewer will ask for. Most of it already exists in prose and needs to be put in the expected shape.",
+      tasks:[
+        {id:"t201", t:"Business plan v1", d:"Executive summary, problem, product, market, model, GTM, competition, team, entity, financials, roadmap. Source material is already written in the strategy doc.", o:"K", due:"8 Sep"},
+        {id:"t202", t:"Financial model with runway and ask", d:"What a grant unlocks, what an accelerator check unlocks, what an angel round unlocks. Three columns.", o:"Both", due:"9 Sep"},
+        {id:"t203", t:"Entity and cap table on paper", d:"Exactly how Passport sits under Ultrium and what percentage each person holds. Settle this before it comes up in a room.", o:"Both", due:"9 Sep", flag:true},
+        {id:"t204", t:"IP assignment signed", d:"Everything Paris or any contractor built for Passport formally assigned to the company.", o:"Both", due:"10 Sep"},
+        {id:"t205", t:"Founder agreement and vesting", d:"Documented between the two of you. Accelerators ask, and it is harder to write later.", o:"Both", due:"10 Sep"},
+        {id:"t206", t:"Trademark search on the name", d:"Passport is a common word. A search now beats a rename after the launch push.", o:"K", due:"10 Sep"},
+        {id:"t207", t:"Terms of service and privacy policy live", d:"Visible on yourpassport.ai. A company selling verifiable evidence gets held to its own standard.", o:"P", due:"11 Sep"},
+        {id:"t208", t:"State the SOC 2 position", d:"A stated path is enough at this stage. Enterprise buyers of authorization infrastructure will ask on the first call.", o:"Both", due:"12 Sep"},
+        {id:"t209", t:"One page grant narrative", d:"The version a program officer reads in ninety seconds.", o:"K", due:"9 Sep"}
+      ]},
+    { id:"p3", num:"03", name:"Get in front of capital", when:"10 to 30 Sep", why:"Michigan programs first, then the national accelerators. Both YC and Techstars weight evidence of speed over polish, so applications improve with every design partner conversation.",
+      tasks:[
+        {id:"t301", t:"Grant and capital tracker live", d:"Program, deadline, amount, fit, status, owner. One sheet, updated weekly.", o:"K", due:"10 Sep"},
+        {id:"t302", t:"TechTown Detroit", d:"Detroit based, tech and social impact focus, mentorship and investor connections. Closest geographic and narrative fit.", o:"K", due:"12 Sep"},
+        {id:"t303", t:"Desai Accelerator", d:"University of Michigan, seed funding and intensive mentorship for early stage scalable ventures. Dr. Zahid Syed is a possible warm door.", o:"K", due:"12 Sep"},
+        {id:"t304", t:"Michigan Accelerator Fund I and Conquer Accelerator", d:"Capital and a ten week program with 20K. Sector agnostic, so the fit is on team and traction.", o:"K", due:"15 Sep"},
+        {id:"t305", t:"Y Combinator application", d:"No deck. One form of roughly fifteen short answers plus a one minute founder video, no referral or fee. Screened on velocity and founder market fit. Four batches a year, so confirm the current deadline.", o:"Both", due:"Check batch"},
+        {id:"t306", t:"Techstars application", d:"Takes one to four hours and can be updated as you develop. Evaluated on team cohesion, market validation, business fundamentals, and coachability. Confirm the specific program's terms before applying.", o:"Both", due:"Check program"},
+        {id:"t307", t:"Line up one or two design partners first", d:"Both programs weight evidence of external interest. A named pilot conversation changes the application.", o:"Both", due:"20 Sep", flag:true}
+      ]},
+    { id:"p4", num:"04", name:"Attention beyond social", when:"Rolling", why:"Social is one channel. The founder documentary, press, the developer community, and the stage are the ones that compound.",
+      tasks:[
+        {id:"t401", t:"Start recording the documentary", d:"Build sessions, internal debates, investor meetings. Footage compounds and the early days cannot be shot later. A phone and a clip on lav mic is enough to start.", o:"Both", due:"Today", flag:true},
+        {id:"t402", t:"Set the consent practice", d:"A quick verbal or written yes from anyone on camera, investors included, before recording starts.", o:"K", due:"Before first meeting"},
+        {id:"t403", t:"Decide the stealth boundary for footage", d:"The strategy holds founders and pipeline out of public view right now. Shooting is separate from publishing. Agree explicitly that you are filming for a later reveal reel.", o:"Both", due:"8 Sep", flag:true},
+        {id:"t404", t:"Footage naming and backup convention", d:"Date, context, participants. One drive, one folder structure, backed up. This is what makes an editor possible later.", o:"K", due:"9 Sep"},
+        {id:"t405", t:"Cut the YC founder video from documentary footage", d:"The application needs one minute of founders talking to camera. One shoot, several uses.", o:"Both", due:"With YC application"},
+        {id:"t406", t:"Build the press list", d:"Reporters and newsletters covering AI agent security and governance. Pitch the public verifier, not the company.", o:"K", due:"15 Sep"},
+        {id:"t407", t:"Launch the public verifier on a developer channel", d:"Show the tool rather than announce the company. Fits the voice better than a launch post.", o:"P", due:"20 Sep"},
+        {id:"t408", t:"Pick two or three conference CFPs", d:"Talks build the technically credible half of the brand that social cannot reach.", o:"K", due:"30 Sep"},
+        {id:"t409", t:"Email capture live on the site", d:"Two tracks, investor and practitioner. Owned audience rather than rented.", o:"P", due:"12 Sep"}
+      ]},
+    { id:"p5", num:"05", name:"Operating rhythm", when:"Weekly", why:"The part that keeps everything above from sliding. Same day, same three questions.",
+      tasks:[
+        {id:"t501", t:"Friday review", d:"Content data, responses, outreach, product questions. Thirty minutes.", o:"Both", due:"Fridays"},
+        {id:"t502", t:"Lock the next two week sprint", d:"Anything still open here gets a date or gets dropped on purpose.", o:"K", due:"Fridays"},
+        {id:"t503", t:"Update this roadmap and the brand guide", d:"Decisions land here so the next person reading does not have to reconstruct them.", o:"Both", due:"Fridays"}
+      ]}
+  ];
+
+  var ALL = []; PHASES.forEach(function(p){ p.tasks.forEach(function(t){ ALL.push(t); }); });
+
+  var state = { v:1, done:{} };
+  try{
+    var el = document.getElementById('state');
+    if (el) state = JSON.parse(el.textContent) || state;
+    if (!state.done) state.done = {};
+  }catch(e){}
+
+  var writer = null, mode = 'local', filter = 'all';
+
+  try{
+    var ls = localStorage.getItem('passport-roadmap');
+    if (ls){ var local = JSON.parse(ls); if (local && local.done){ Object.keys(local.done).forEach(function(k){ if(!(k in state.done)) state.done[k] = local.done[k]; }); } }
+  }catch(e){}
+
+  function isDone(id){ return !!state.done[id]; }
+  function phaseCount(p){ var d=0; p.tasks.forEach(function(t){ if(isDone(t.id)) d++; }); return d; }
+  function totalDone(){ var d=0; ALL.forEach(function(t){ if(isDone(t.id)) d++; }); return d; }
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function markSVG(size){
+    var out = '', RO=50, RI=32.6;
+    for (var i=0;i<24;i++){
+      var c = 4.7 + i*15, a0=c-6.65, a1=c+6.65;
+      var p=function(a,r){ var rad=(a-90)*Math.PI/180; return (50+r*Math.cos(rad)).toFixed(2)+','+(50+r*Math.sin(rad)).toFixed(2); };
+      out += '<path d="M'+p(a0,RO)+'A'+RO+','+RO+' 0 0 1 '+p(a1,RO)+'L'+p(a1,RI)+'A'+RI+','+RI+' 0 0 0 '+p(a0,RI)+'Z" fill="'+(i%3===0?'#F9F9F8':'#575757')+'"/>';
+    }
+    out += '<circle cx="50" cy="50" r="21.9" fill="none" stroke="#4A4A4A" stroke-width="1.1"/><circle cx="50" cy="50" r="8.8" fill="#F9F9F8"/>';
+    return '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true">'+out+'</svg>';
+  }
+
+  function ringSVG(done, total){
+    var pct = total ? done/total : 0, R = 13, C = 2*Math.PI*R;
+    return '<svg class="ring" viewBox="0 0 32 32" aria-hidden="true">'
+      + '<circle cx="16" cy="16" r="'+R+'" fill="#1A1E1F" stroke="#343A3C" stroke-width="2.5"/>'
+      + (pct > 0 ? '<circle cx="16" cy="16" r="'+R+'" fill="none" stroke="#3FD7DC" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="'+(C*pct).toFixed(2)+' '+C.toFixed(2)+'" transform="rotate(-90 16 16)"/>' : '')
+      + (pct >= 1 ? '<path d="M11.5 16.2 L14.6 19.2 L20.5 12.8" fill="none" stroke="#3FD7DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' : '<circle cx="16" cy="16" r="3" fill="'+(pct>0?'#3FD7DC':'#343A3C')+'"/>')
+      + '</svg>';
+  }
+
+  function coverArt(){
+    var seed = 20260907;
+    function rnd(){ seed = (seed*1664525 + 1013904223) % 4294967296; return seed/4294967296; }
+    var s = '';
+    for (var i=0;i<70;i++){
+      s += '<circle cx="'+(rnd()*1200).toFixed(1)+'" cy="'+(rnd()*260).toFixed(1)+'" r="'+(rnd()*0.8+0.25).toFixed(2)+'" fill="#F9F9F8" opacity="'+(rnd()*0.45+0.1).toFixed(2)+'"/>';
+    }
+    var paths = '';
+    for (var k=15;k>=0;k--){
+      var w = 22 + k*13, top = 120 - k*7, lx = 980-w, rx = 980+w, edge = 215 + k*8;
+      var d = 'M-20,'+edge+'C'+(700-k*8)+','+edge+' '+(lx-6)+',300 '+lx+','+(top+w)
+            + 'A'+w+','+w+' 0 0 1 '+rx+','+(top+w)
+            + 'C'+(rx+6)+',300 '+(1200+k*8)+','+edge+' 1420,'+edge;
+      var cy = k<3;
+      paths += '<path d="'+d+'" fill="none" stroke="'+(cy?'#3FD7DC':'#A29376')+'" stroke-width="'+(cy?1.5:0.9)+'" opacity="'+(cy?(0.9-k*0.2).toFixed(2):Math.max(0.09,0.42-k*0.02).toFixed(2))+'"'+(cy?' filter="url(#rg)"':'')+'/>';
+    }
+    return '<svg class="art" viewBox="0 0 1400 260" preserveAspectRatio="xMidYMid slice">'
+      + '<defs><filter id="rg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>'
+      + '<rect width="1400" height="260" fill="#141718"/>' + s + paths + '</svg>';
+  }
+
+  function ownerClass(o){ return o === 'K' ? 'k' : (o === 'P' ? 'p' : ''); }
+  function ownerLabel(o){ return o === 'K' ? 'Kalena' : (o === 'P' ? 'Paris' : 'Both'); }
+
+  function taskHTML(t){
+    var done = isDone(t.id);
+    return '<div class="task'+(done?' done':'')+'" data-id="'+t.id+'" role="checkbox" tabindex="0" aria-checked="'+done+'">'
+      + '<span class="box"><svg viewBox="0 0 12 12"><path d="M2 6.3 L4.7 9 L10 3.2" fill="none" stroke="#141718" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+      + '<span class="body"><span class="t">'+esc(t.t)+(t.flag?' <span class="mono" style="color:#A29376;font-size:10px;letter-spacing:.08em;">KEY</span>':'')+'</span>'
+      + '<span class="d">'+esc(t.d)+'</span></span>'
+      + '<span class="side"><span class="owner '+ownerClass(t.o)+'">'+ownerLabel(t.o)+'</span><span class="due">'+esc(t.due)+'</span></span>'
+      + '</div>';
+  }
+
+  function render(){
+    var done = totalDone(), total = ALL.length;
+    var html = ''
+      + '<header class="top">' + coverArt() + '<span class="scrim"></span><div class="inner wrap">'
+      + '<div class="lockup">' + markSVG() + '<span class="wm"><span class="y">Your</span><span class="p">Passport</span></span></div>'
+      + '<h1 class="title">Build <b>Roadmap</b></h1>'
+      + '<p class="subtitle">Everything between here and a company an accelerator, a grant reviewer, or an investor would recognize as ready. Tick items as they land. Progress saves for everyone with the link.</p>'
+      + '<div class="summary">'
+      + '<span class="bigcount"><b>'+done+'</b> / '+total+' complete</span>'
+      + '<span class="bar"><i style="width:'+(total? (done/total*100).toFixed(1):0)+'%"></i></span>'
+      + '<span class="savestate'+(mode==='shared'?' on':'')+'">'+(mode==='shared'?'Saving for everyone':'Saving on this device')+'</span>'
+      + '</div></div></header>';
+
+    html += '<div class="timeline-band"><div class="timeline">';
+    PHASES.forEach(function(p){
+      var d = phaseCount(p);
+      html += '<button class="node'+(d===p.tasks.length?' active':'')+'" data-go="'+p.id+'">'
+        + '<span class="track"></span>' + ringSVG(d, p.tasks.length)
+        + '<span class="lbl">'+esc(p.name)+'</span>'
+        + '<span class="meta">'+d+' of '+p.tasks.length+' &middot; '+esc(p.when)+'</span>'
+        + '</button>';
+    });
+    html += '</div></div>';
+
+    html += '<div class="wrap"><div class="toolbar">'
+      + '<button class="chip'+(filter==='all'?' on':'')+'" data-f="all">All '+total+'</button>'
+      + '<button class="chip'+(filter==='open'?' on':'')+'" data-f="open">Open '+(total-done)+'</button>'
+      + '<button class="chip'+(filter==='done'?' on':'')+'" data-f="done">Done '+done+'</button>'
+      + '<button class="chip'+(filter==='K'?' on':'')+'" data-f="K">Kalena</button>'
+      + '<button class="chip'+(filter==='P'?' on':'')+'" data-f="P">Paris</button>'
+      + '<button class="chip'+(filter==='key'?' on':'')+'" data-f="key">Key moves</button>'
+      + '</div>';
+
+    PHASES.forEach(function(p){
+      var list = p.tasks.filter(function(t){
+        if (filter==='open') return !isDone(t.id);
+        if (filter==='done') return isDone(t.id);
+        if (filter==='K') return t.o==='K' || t.o==='Both';
+        if (filter==='P') return t.o==='P' || t.o==='Both';
+        if (filter==='key') return !!t.flag;
+        return true;
+      });
+      html += '<section class="phase" id="'+p.id+'">'
+        + '<div class="phase-head"><span class="phase-num">'+p.num+'</span><h2>'+esc(p.name)+'</h2><span class="phase-when">'+esc(p.when)+'</span></div>'
+        + '<p class="phase-why">'+esc(p.why)+'</p>';
+      html += list.length ? '<div class="tasks">' + list.map(taskHTML).join('') + '</div>'
+                          : '<div class="empty">Nothing here under this filter.</div>';
+      html += '</section>';
+    });
+
+    html += '<div class="note"><div class="h">Before the first recorded investor meeting</div><p>The brand strategy holds founders and pipeline out of public view during stealth. Recording and publishing are two separate decisions. Agree with Paris that you are shooting for a later reveal, get consent on camera every time, and the documentary stays inside the policy.</p></div>';
+
+    html += '<footer>Passport Build Roadmap &middot; started 07 Sep 2026<br>Accelerator requirements verified against Y Combinator and Techstars published guidance, September 2026<br>Companion to the Passport Brand Guide and the Brand Strategy and GTM System v1.0</footer></div>';
+
+    var root = document.getElementById('root');
+    if (root) root.innerHTML = html;
+  }
+
+  function persist(){
+    try{ localStorage.setItem('passport-roadmap', JSON.stringify({done:state.done})); }catch(e){}
+    if (!writer) return;
+    var css = document.getElementById('app-style').textContent;
+    var js = document.getElementById('app-script').textContent;
+    var json = JSON.stringify(state).replace(/</g,'\\u003c');
+    var doc = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+      + '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
+      + '<title>Passport Build Roadmap</title>\n'
+      + '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">\n'
+      + '<style>body{margin:0}</style>\n'
+      + '<style id="app-style">' + css + '<\/style>\n</head>\n<body>\n'
+      + '<div id="root"></div>\n'
+      + '<script id="state" type="application/json">' + json + '<\/script>\n'
+      + '<script id="app-script">' + js + '<\/script>\n</body>\n</html>';
+    writer.publish(doc).catch(function(){});
+  }
+
+  var pending = null;
+  function toggle(id){
+    if (state.done[id]) delete state.done[id];
+    else state.done[id] = new Date().toISOString().slice(0,10);
+    render();
+    clearTimeout(pending);
+    pending = setTimeout(persist, 700);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('.task');
+    if (t){ toggle(t.getAttribute('data-id')); return; }
+    var c = e.target.closest('.chip');
+    if (c){ filter = c.getAttribute('data-f'); render(); return; }
+    var n = e.target.closest('.node');
+    if (n){ var el = document.getElementById(n.getAttribute('data-go')); if (el) el.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    var t = e.target.closest && e.target.closest('.task');
+    if (t){ e.preventDefault(); toggle(t.getAttribute('data-id')); }
+  });
+
+  render();
+
+  if (window.claude && window.claude.use){
+    window.claude.use('artifact').then(function(a){
+      if (a && a.publish){ writer = a; mode = 'shared'; render(); }
+    }).catch(function(){});
+  }
+})();
+</script>
+
+</body>
+</html>

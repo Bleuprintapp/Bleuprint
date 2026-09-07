@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Passport Week One Posts</title>
+<style>body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style id="app-style">
+  :root{
+    --ground:#1A1E1F; --ground-deep:#141718; --surface:#232729; --surface-2:#2A2F31;
+    --line:#343A3C; --paper:#F9F9F8; --dim:#9AA2A4; --dim-2:#6E7678;
+    --signal:#3FD7DC; --gold:#A29376;
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--ground);color:var(--paper);font-family:'Inter',system-ui,-apple-system,sans-serif;line-height:1.6;margin:0;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{margin:0;font-weight:600;letter-spacing:-0.02em;text-wrap:balance;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 28px;}
+  @media (max-width:640px){.wrap{padding:0 16px;}}
+
+  header.top{background:var(--ground-deep);border-bottom:1px solid var(--line);position:relative;overflow:hidden;}
+  header.top .art{position:absolute;inset:0;width:100%;height:100%;}
+  header.top .scrim{position:absolute;inset:0;background:linear-gradient(90deg,#141718 0%,#141718 42%,rgba(20,23,24,0.5) 68%,rgba(20,23,24,0) 86%);}
+  header.top .inner{position:relative;z-index:2;padding:28px 0 34px;}
+  .lockup{display:flex;align-items:center;gap:11px;margin-bottom:24px;}
+  .lockup .wm{font-size:18px;letter-spacing:-0.025em;line-height:1;}
+  .lockup .wm .y{font-weight:300;} .lockup .wm .p{font-weight:700;}
+  .mark{width:28px;height:28px;flex:none;}
+  h1.title{font-size:clamp(28px,5vw,44px);font-weight:300;letter-spacing:-0.04em;line-height:1;}
+  h1.title b{font-weight:700;}
+  .subtitle{color:var(--dim);font-size:14px;margin-top:12px;max-width:54ch;}
+  .savestate{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim-2);margin-top:18px;}
+  .savestate.on{color:var(--signal);}
+
+  .weekband{border-bottom:1px solid var(--line);background:var(--ground);position:sticky;top:0;z-index:20;}
+  .week{display:flex;gap:0;overflow-x:auto;padding:14px 28px;max-width:960px;margin:0 auto;scrollbar-width:none;}
+  .week::-webkit-scrollbar{display:none;}
+  @media (max-width:640px){.week{padding:12px 16px;}}
+  .day{flex:1;min-width:120px;background:none;border:none;border-top:2px solid var(--line);padding:10px 12px 0 0;margin-right:10px;cursor:pointer;text-align:left;font-family:inherit;color:inherit;}
+  .day.approved{border-top-color:var(--signal);}
+  .day:focus-visible{outline:2px solid var(--signal);outline-offset:2px;}
+  .day .dt{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim-2);}
+  .day .dn{display:block;font-size:13px;font-weight:600;letter-spacing:-0.01em;margin-top:3px;}
+  .day.approved .dn{color:var(--signal);}
+  .day .ds{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim-2);margin-top:2px;}
+
+  .post-day{padding:38px 0 8px;border-top:1px solid var(--line);margin-top:22px;scroll-margin-top:92px;}
+  .post-day:first-of-type{border-top:none;margin-top:8px;}
+  .pd-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+  .pd-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gold);letter-spacing:0.1em;}
+  .pd-head h2{font-size:clamp(22px,3.2vw,30px);font-weight:700;letter-spacing:-0.035em;}
+  .tags{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 18px;}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;border:1px solid var(--line);color:var(--dim);}
+  .tag.proof{border-color:#6E6247;color:#C6B287;}
+  .tag.pillar{border-color:#3F6E72;color:#7FD3D8;}
+
+  .variants{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:760px){.variants{grid-template-columns:1fr;}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:5px;display:flex;flex-direction:column;overflow:hidden;}
+  .card.approved{border-color:var(--signal);}
+  .card-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--ground-deep);}
+  .card-bar .v{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim-2);}
+  .card.approved .card-bar .v{color:var(--signal);}
+  .card-actions{display:flex;gap:6px;}
+  .btn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;background:none;border:1px solid var(--line);color:var(--dim);border-radius:3px;padding:4px 9px;cursor:pointer;}
+  .btn:hover{color:var(--paper);border-color:var(--dim-2);}
+  .btn:focus-visible{outline:2px solid var(--signal);outline-offset:1px;}
+  .btn.on{background:var(--signal);border-color:var(--signal);color:#0E2C2E;font-weight:500;}
+  .copy-text{padding:16px 18px;font-size:14px;white-space:pre-wrap;flex:1;line-height:1.62;}
+  .card-foot{padding:10px 18px 14px;font-size:11.5px;color:var(--dim-2);border-top:1px dashed var(--line);}
+  .fill{color:#E0B26A;}
+
+  .brief{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--gold);border-radius:0 4px 4px 0;padding:14px 16px;margin-top:16px;font-size:13px;color:var(--dim);}
+  .brief b{color:var(--paper);font-weight:600;}
+
+  .section{padding:40px 0 10px;border-top:1px solid var(--line);margin-top:34px;}
+  .section h2{font-size:clamp(24px,3.6vw,34px);font-weight:700;letter-spacing:-0.035em;}
+  .lede{color:var(--dim);font-size:14.5px;max-width:62ch;margin:12px 0 20px;}
+  .qlist{border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .q{display:flex;gap:14px;padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--line);}
+  .q:last-child{border-bottom:none;}
+  .q .n{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);flex:none;width:20px;}
+  .q .qt{font-size:14px;font-weight:500;}
+  .q .qd{font-size:12.5px;color:var(--dim);margin-top:3px;}
+  .rules{display:grid;gap:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-top:18px;}
+  .rule{padding:13px 16px;background:var(--surface);border-bottom:1px solid var(--line);font-size:13px;color:var(--dim);}
+  .rule:last-child{border-bottom:none;}
+  .rule b{color:var(--paper);font-weight:600;}
+
+  .cal{display:grid;grid-template-columns:96px repeat(7,1fr);gap:4px;margin-top:22px;min-width:760px;}
+  .cal-scroll{overflow-x:auto;}
+  .cal .hd{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim-2);padding:6px 4px;}
+  .cal .pl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim);padding:10px 4px;align-self:center;}
+  .cal .cell{min-height:58px;border:1px solid var(--line);border-radius:3px;background:var(--surface);padding:7px 8px;font-size:11.5px;line-height:1.35;cursor:pointer;color:var(--paper);text-align:left;font-family:inherit;}
+  .cal .cell:hover{background:var(--surface-2);}
+  .cal .cell:focus-visible{outline:2px solid var(--signal);outline-offset:1px;}
+  .cal .cell.empty{background:transparent;border-style:dashed;cursor:default;}
+  .cal .cell.ok{border-color:var(--signal);}
+  .cal .cell .ct{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--dim-2);margin-top:3px;}
+  .cal .cell.ok .ct{color:var(--signal);}
+  .platform{padding:44px 0 6px;border-top:1px solid var(--line);margin-top:30px;scroll-margin-top:20px;}
+  .platform h2.big{font-size:clamp(28px,4.5vw,44px);font-weight:700;letter-spacing:-0.045em;}
+  .platform .plede{color:var(--dim);font-size:14px;max-width:60ch;margin:10px 0 6px;}
+  .spec{background:var(--ground-deep);border:1px solid var(--line);border-radius:4px;padding:14px 16px;margin-top:16px;font-size:12.5px;color:var(--dim);}
+  .spec b{color:var(--paper);font-weight:600;}
+  .spec .mono{color:var(--gold);}
+  .decisions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;}
+  @media (max-width:760px){.decisions{grid-template-columns:1fr 1fr;}}
+  .dec{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;}
+  .dec .k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim-2);}
+  .dec .v{font-size:13.5px;font-weight:500;margin-top:5px;}
+  footer{border-top:1px solid var(--line);margin-top:44px;padding:24px 0 60px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim-2);line-height:1.8;}
+</style>
+
+<div id="root"></div>
+<script id="state" type="application/json">{"v":1,"approved":{}}</script>
+<script id="app-script">
+(function(){
+  var DAYS = [
+    {
+      id:"mon", num:"01", dow:0, date:"Mon 7 Sep", name:"The permission gap",
+      pillar:"Pillar 1", proof:"Scenario", format:"Text only, or the Permission visual from the first set",
+      brief:"First post on the new company page. It opens on the problem rather than the company. No product, no launch language.",
+      time:"8:30am ET",
+      a:"Your support agent can issue a refund.\n\nWho decided its limit?\n\nMost teams can answer the first half of that. The agent has a key, a role, a set of tools it can reach. Ask the second half and the answers get vague. It was in the prompt. It inherited a service account. Someone wired it up during a sprint two quarters ago.\n\nIdentity tells you who an agent is. It says nothing about what that agent was permitted to do, who permitted it, or how anyone would demonstrate that six months from now.\n\nThat space between capability and authority is where the risk sits.\n\nScenario, illustrative.",
+      b:"Every team deploying agents has answered one question carefully: what can this thing access?\n\nFewer have answered the one underneath it: what is it allowed to do with that access, and who decided?\n\nAn API key opens a door. The decision about what may happen past it was made somewhere else, usually without a record. When an agent moves money, changes a record, or sends something on your behalf, someone authorized that boundary, and right now that authorization usually lives in a prompt, a config file, or a conversation nobody wrote down.\n\nAutomation should never sever action from authority.\n\nScenario, illustrative."
+    },
+    {
+      id:"tue", num:"02", dow:1, date:"Tue 8 Sep", name:"The proof gap",
+      pillar:"Pillar 2", proof:"Scenario", format:"Text only, or the Proof visual",
+      brief:"Follows Monday directly. Monday asks who decided. Tuesday asks what survives afterward.",
+      time:"8:30am ET",
+      a:"An agent ran last night. Something moved that should not have moved.\n\nWhat can you show?\n\nLogs record what happened. Prompts record what was asked. Screenshots record what one person saw on one screen. In an incident review, none of those establish that the action was authorized, by whom, or inside what limits.\n\nThe useful question in that room is narrow: was this permitted, and can someone outside the system that took the action verify it?\n\nIf the answer depends on trusting the same stack that made the mistake, an auditor will treat it as a claim.\n\nScenario, illustrative.",
+      b:"Ask your team what proof you would hand an auditor if an agent took an action nobody expected.\n\nMost answers land on logs. Logs are a record of events written by the system under review. They tell you what the system believes happened.\n\nEvidence is different. It is a signed, durable record that a specific decision was authorized, bounded, and attributable, readable by someone who does not have to trust the system that produced it.\n\nOne of those survives a hard question. The other explains it.\n\nScenario, illustrative."
+    },
+    {
+      id:"wed", num:"03", dow:2, date:"Wed 9 Sep", name:"The public verifier",
+      pillar:"Pillar 6", proof:"Lab demonstration", format:"Screen recording, 30 to 45 seconds, plus link in the first comment",
+      brief:"Matches the verifier walkthrough already scheduled for today in the sprint. Show the tool working. Say nothing about architecture.",
+      time:"9:00am ET",
+      a:"We built the verifier as a public tool, because a proof you can only check inside our system is a promise.\n\nPaste a decision receipt. It checks the signature, shows what was authorized, what limits applied, and who held the authority at the time. It runs whether or not you use anything else we make.\n\nWalkthrough is in the comments.\n\nThe receipt proves the authorization decision. It does not claim the downstream system executed the outcome, and we will keep saying that plainly.\n\nLab demonstration, reproduced by our team.",
+      b:"A short walkthrough of the public verifier.\n\nYou give it a decision receipt. It returns four things: whether the signature holds, what action was authorized, what bounds were set, and who the authority was.\n\nWe made it public and independent on purpose. Evidence that can only be checked by the vendor who issued it asks you to trust the vendor twice.\n\nLink in the comments. It works without an account.\n\nLab demonstration, reproduced by our team."
+    },
+    {
+      id:"thu", num:"04", dow:3, date:"Thu 10 Sep", name:"Sourced report",
+      pillar:"Pillar 5", proof:"Sourced report", format:"The 56 second news clip, outlet and date on screen the whole time",
+      brief:"Fill in the outlet name and publication date from the clip before this goes anywhere. The proof rule applies to us before it applies to anyone else.",
+      time:"8:30am ET",
+      a:"[OUTLET], [DATE]: an AI agent deleted a company's database, then apologized.\n\nThe apology is the part that travels. The part that matters to anyone running agents against production systems is narrower.\n\nWhat was that agent permitted to do? Who set that boundary, and when? What record of the authorization survived the incident, and could anyone read it without trusting the system that failed?\n\nAn agent doing something destructive is a story. An agent doing something destructive that nobody authorized and nobody can reconstruct is a category of risk.\n\nSourced report. Full clip credited to [OUTLET], [DATE].",
+      b:"[OUTLET] reported on [DATE] that an AI agent deleted a company's entire database and then apologized for it.\n\nWorth separating two failures there.\n\nThe first is the action. That gets the attention.\n\nThe second is quieter: at no point did a bounded, recorded, attributable authorization stand between the agent and the database. Which means after the fact, the questions an incident review needs answered have no source to answer them.\n\nThe first failure is a bug. The second is a missing layer.\n\nSourced report. Clip credited to [OUTLET], [DATE]."
+    },
+    {
+      id:"fri", num:"05", dow:4, date:"Fri 11 Sep", name:"Five bounds",
+      pillar:"Pillar 1", proof:"Scenario", format:"Carousel or a single Scope visual",
+      brief:"Closes the week on the control model. This is the most saveable post of the five, so give it the strongest visual.",
+      time:"8:00am ET",
+      a:"Permission for an agent is a sentence with five parts.\n\nWhich resource.\nWhich action.\nUp to what value.\nAt what risk level.\nFor how long.\n\nLeave any one of them unstated and the permission is unlimited in that dimension. Most agent deployments we see specify the first two and leave the last three to inference.\n\n\"Can access the payments API\" is a resource and an action. It is silent on amount, risk, and expiry, which is where the expensive surprises come from.\n\nBound the action. Name the approver. Keep the proof.\n\nScenario, illustrative.",
+      b:"If you are writing permissions for an agent this quarter, five questions are worth answering explicitly before it ships.\n\nWhat can it reach?\nWhat can it do there?\nUp to what amount?\nAt what risk threshold does a person get involved?\nWhen does this expire?\n\nAny question left blank becomes an assumption, and assumptions inside an autonomous system are permissions nobody remembers granting.\n\nGive agents permission. Keep people accountable.\n\nScenario, illustrative."
+    }
+  ];
+
+  var IG = [
+    {
+      id:"ig1", num:"01", date:"Tue 8 Sep", dow:1, name:"The reveal, part one", time:"12:00pm ET",
+      pillar:"Teaser arc", proof:"No claim", format:"Reel, 9:16, 8 seconds, original audio",
+      brief:"The mark animates in, spins, settles. Then one line of on-screen text. Nothing else. No URL, no product, no explanation in the caption.",
+      screen:"Do you trust your AI agents?",
+      a:"Are AI agents trustworthy?",
+      b:"Agents can act now. Do you trust yours?",
+      source:"Paris exports the live mark animation, or a clean screen capture of it. This one should come from the real thing."
+    },
+    {
+      id:"ig2", num:"02", date:"Thu 10 Sep", dow:3, name:"Who decided its limit?", time:"12:00pm ET",
+      pillar:"Pillar 1", proof:"Scenario", format:"Motion text card, 9:16, 7 seconds",
+      brief:"Second question in the arc. Same world as the deck: deep ground, gold contour lines, one cyan gate. Text appears in two beats.",
+      screen:"Your agent can issue a refund. / Who decided its limit?",
+      a:"Your agent can issue a refund. Who decided its limit?\n\nScenario, illustrative.",
+      b:"It has the API key. Who set the amount?\n\nScenario, illustrative.",
+      source:"Generated from the brand guide spec below, or built by you. Paris only if the generated version misses the gate."
+    },
+    {
+      id:"ig3", num:"03", date:"Sat 12 Sep", dow:5, name:"What can you show?", time:"10:00am ET",
+      pillar:"Pillar 2", proof:"Scenario", format:"Motion text card, 9:16, 7 seconds",
+      brief:"Third question. Closes the week without answering anything. The answers start the week after.",
+      screen:"An agent ran last night. / Something moved. / What can you show?",
+      a:"Logs say what happened. What proves it was allowed?\n\nScenario, illustrative.",
+      b:"An agent ran last night. What can you show?\n\nScenario, illustrative.",
+      source:"Generated from the spec below, or built by you."
+    }
+  ];
+
+  var TT = [
+    {
+      id:"tt1", num:"01", date:"Tue 8 Sep", dow:1, name:"The reveal, part one", time:"7:00pm ET",
+      pillar:"Teaser arc", proof:"No claim", format:"Same 8 second reveal, native upload, original audio",
+      brief:"Same asset as Instagram. TikTok caption is shorter and lowercase. No hashtags beyond one or two that describe the topic.",
+      screen:"Do you trust your AI agents?",
+      a:"are AI agents trustworthy?",
+      b:"your AI agent can take actions now. do you trust it?",
+      source:"Same file as IG 01."
+    },
+    {
+      id:"tt2", num:"02", date:"Thu 10 Sep", dow:3, name:"Who decided its limit?", time:"7:00pm ET",
+      pillar:"Pillar 1", proof:"Scenario", format:"Same motion card, 7 seconds",
+      brief:"Same asset as IG 02. Caption carries the question and the label, nothing more.",
+      screen:"Your agent can issue a refund. / Who decided its limit?",
+      a:"your agent can issue a refund. who decided its limit? (scenario)",
+      b:"it has the key. who set the amount? (scenario)",
+      source:"Same file as IG 02."
+    },
+    {
+      id:"tt3", num:"03", date:"Sat 12 Sep", dow:5, name:"What can you show?", time:"7:00pm ET",
+      pillar:"Pillar 2", proof:"Scenario", format:"Same motion card, 7 seconds",
+      brief:"Same asset as IG 03.",
+      screen:"An agent ran last night. / Something moved. / What can you show?",
+      a:"an agent ran last night. what can you show? (scenario)",
+      b:"logs say what happened. what proves it was allowed? (scenario)",
+      source:"Same file as IG 03."
+    }
+  ];
+
+  var DECISIONS = [
+    {k:"Cadence", v:"LinkedIn daily. Instagram and TikTok three times a week."},
+    {k:"Visuals", v:"Generated from the guide plus your own builds. Paris occasionally, until Higgsfield is in hand."},
+    {k:"Teaser arc", v:"Starts this week: logo reveal and the open question. News clips and street interviews follow."},
+    {k:"LenaMichelle", v:"Stays separate from Passport for now. No resharing."}
+  ];
+
+  var DOWS = ["Mon 7","Tue 8","Wed 9","Thu 10","Fri 11","Sat 12","Sun 13"];
+
+  var state = {v:1, approved:{}};
+  try{ var el = document.getElementById('state'); if (el) state = JSON.parse(el.textContent) || state; if(!state.approved) state.approved = {}; }catch(e){}
+  try{ var ls = localStorage.getItem('passport-week-one'); if (ls){ var l = JSON.parse(ls); if (l && l.approved) Object.keys(l.approved).forEach(function(k){ if(!(k in state.approved)) state.approved[k]=l.approved[k]; }); } }catch(e){}
+
+  var writer = null, mode = 'local';
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function isApproved(id){ return !!state.approved[id]; }
+  function dayApproved(d){ return isApproved(d.id+'-a') || isApproved(d.id+'-b'); }
+
+  function markSVG(){
+    var out='', RO=50, RI=32.6;
+    var p=function(a,r){ var rad=(a-90)*Math.PI/180; return (50+r*Math.cos(rad)).toFixed(2)+','+(50+r*Math.sin(rad)).toFixed(2); };
+    for (var i=0;i<24;i++){
+      var c=4.7+i*15;
+      out += '<path d="M'+p(c-6.65,RO)+'A'+RO+','+RO+' 0 0 1 '+p(c+6.65,RO)+'L'+p(c+6.65,RI)+'A'+RI+','+RI+' 0 0 0 '+p(c-6.65,RI)+'Z" fill="'+(i%3===0?'#F9F9F8':'#575757')+'"/>';
+    }
+    out += '<circle cx="50" cy="50" r="21.9" fill="none" stroke="#4A4A4A" stroke-width="1.1"/><circle cx="50" cy="50" r="8.8" fill="#F9F9F8"/>';
+    return '<svg class="mark" viewBox="0 0 100 100" aria-hidden="true">'+out+'</svg>';
+  }
+
+  function coverArt(){
+    var seed=20260908;
+    function rnd(){ seed=(seed*1664525+1013904223)%4294967296; return seed/4294967296; }
+    var s='';
+    for (var i=0;i<60;i++) s += '<circle cx="'+(rnd()*1300).toFixed(1)+'" cy="'+(rnd()*240).toFixed(1)+'" r="'+(rnd()*0.8+0.25).toFixed(2)+'" fill="#F9F9F8" opacity="'+(rnd()*0.45+0.1).toFixed(2)+'"/>';
+    var paths='';
+    for (var k=14;k>=0;k--){
+      var w=20+k*13, top=105-k*6, lx=960-w, rx=960+w, edge=200+k*8;
+      var d='M-20,'+edge+'C'+(680-k*8)+','+edge+' '+(lx-6)+',280 '+lx+','+(top+w)+'A'+w+','+w+' 0 0 1 '+rx+','+(top+w)+'C'+(rx+6)+',280 '+(1180+k*8)+','+edge+' 1420,'+edge;
+      var cy=k<3;
+      paths += '<path d="'+d+'" fill="none" stroke="'+(cy?'#3FD7DC':'#A29376')+'" stroke-width="'+(cy?1.5:0.9)+'" opacity="'+(cy?(0.9-k*0.2).toFixed(2):Math.max(0.09,0.4-k*0.02).toFixed(2))+'"'+(cy?' filter="url(#wg)"':'')+'/>';
+    }
+    return '<svg class="art" viewBox="0 0 1400 240" preserveAspectRatio="xMidYMid slice"><defs><filter id="wg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="1400" height="240" fill="#141718"/>'+s+paths+'</svg>';
+  }
+
+  function cardHTML(day, key, text){
+    var id = day.id+'-'+key, ok = isApproved(id);
+    return '<div class="card'+(ok?' approved':'')+'">'
+      + '<div class="card-bar"><span class="v">Variant '+key.toUpperCase()+(ok?' &middot; approved':'')+'</span>'
+      + '<span class="card-actions">'
+      + '<button class="btn" data-copy="'+id+'">Copy</button>'
+      + '<button class="btn'+(ok?' on':'')+'" data-approve="'+id+'">'+(ok?'Approved':'Approve')+'</button>'
+      + '</span></div>'
+      + '<div class="copy-text" id="txt-'+id+'">'+esc(text).replace(/\[OUTLET\]/g,'<span class="fill">[OUTLET]</span>').replace(/\[DATE\]/g,'<span class="fill">[DATE]</span>')+'</div>'
+      + '<div class="card-foot">'+text.replace(/\n/g,' ').length+' characters</div>'
+      + '</div>';
+  }
+
+  function render(){
+    var ALLP = DAYS.concat(IG, TT); var approvedAll = ALLP.filter(dayApproved).length, totalPosts = ALLP.length;
+    var h = '<header class="top">'+coverArt()+'<span class="scrim"></span><div class="inner wrap">'
+      + '<div class="lockup">'+markSVG()+'<span class="wm"><span class="y">Your</span><span class="p">Passport</span></span></div>'
+      + '<h1 class="title">Week <b>One</b></h1>'
+      + '<p class="subtitle">The week of 7 September across LinkedIn, Instagram, and TikTok. Two caption variants per post. Pick one, hit Approve, and hand the approved copy to the bots. '+approvedAll+' of '+totalPosts+' posts approved.</p>'
+      + '<span class="savestate'+(mode==='shared'?' on':'')+'">'+(mode==='shared'?'Approvals save for everyone':'Approvals save on this device')+'</span>'
+      + '</div></header>';
+
+    h += '<div class="wrap"><div class="cal-scroll"><div class="cal"><span class="hd"></span>';
+    DOWS.forEach(function(x){ h += '<span class="hd">'+x+'</span>'; });
+    [["LinkedIn", DAYS],["Instagram", IG],["TikTok", TT]].forEach(function(row){
+      h += '<span class="pl">'+row[0]+'</span>';
+      for (var i=0;i<7;i++){
+        var item = null; row[1].forEach(function(d){ if (d.dow===i) item = d; });
+        if (item) h += '<button class="cell'+(dayApproved(item)?' ok':'')+'" data-go="'+item.id+'">'+esc(item.name)+'<span class="ct">'+esc(item.time)+(dayApproved(item)?' &middot; approved':'')+'</span></button>';
+        else h += '<span class="cell empty"></span>';
+      }
+    });
+    h += '</div></div>';
+    h += '<div class="decisions">'; DECISIONS.forEach(function(d){ h += '<div class="dec"><span class="k">'+esc(d.k)+'</span><div class="v">'+esc(d.v)+'</div></div>'; }); h += '</div></div>';
+
+    h += '<div class="wrap"><section class="platform" id="linkedin"><h2 class="big">LinkedIn</h2><p class="plede">One post a day, Monday to Friday, 8:30am ET unless noted. Text first. Links go in the first comment.</p></section>';
+    DAYS.forEach(function(d){
+      h += '<section class="post-day" id="'+d.id+'">'
+        + '<div class="pd-head"><span class="pd-num">'+d.num+'</span><h2>'+esc(d.name)+'</h2></div>'
+        + '<div class="tags"><span class="tag">'+esc(d.date)+'</span><span class="tag">'+esc(d.time)+'</span>'
+        + '<span class="tag pillar">'+esc(d.pillar)+'</span><span class="tag proof">'+esc(d.proof)+'</span>'
+        + '<span class="tag">'+esc(d.format)+'</span></div>'
+        + '<div class="variants">'+cardHTML(d,'a',d.a)+cardHTML(d,'b',d.b)+'</div>'
+        + '<div class="brief"><b>Brief.</b> '+esc(d.brief)+'</div>'
+        + '</section>';
+    });
+
+    function visual(list, id, title, lede){
+      h += '<section class="platform" id="'+id+'"><h2 class="big">'+title+'</h2><p class="plede">'+lede+'</p></section>';
+      list.forEach(function(d){
+        h += '<section class="post-day" id="'+d.id+'">'
+          + '<div class="pd-head"><span class="pd-num">'+d.num+'</span><h2>'+esc(d.name)+'</h2></div>'
+          + '<div class="tags"><span class="tag">'+esc(d.date)+'</span><span class="tag">'+esc(d.time)+'</span>'
+          + '<span class="tag pillar">'+esc(d.pillar)+'</span><span class="tag proof">'+esc(d.proof)+'</span>'
+          + '<span class="tag">'+esc(d.format)+'</span></div>'
+          + '<div class="spec"><b>On screen:</b> '+esc(d.screen)+'<br><b>Asset source:</b> '+esc(d.source)+'</div>'
+          + '<div class="variants" style="margin-top:14px;">'+cardHTML(d,'a',d.a)+cardHTML(d,'b',d.b)+'</div>'
+          + '<div class="brief"><b>Brief.</b> '+esc(d.brief)+'</div>'
+          + '</section>';
+      });
+    }
+    visual(IG, 'instagram', 'Instagram', 'Three posts this week, all Reels, all questions. The arc gives nothing away until the week after.');
+    visual(TT, 'tiktok', 'TikTok', 'Same three assets, native upload, evening slot. Captions are shorter and lowercase. Original audio only.');
+
+    h += '<section class="section"><h2>Asset spec for the two motion cards</h2>'
+      + '<p class="lede">Hand this to whoever or whatever makes IG 02 and IG 03. It is the brand guide reduced to one paragraph.</p>'
+      + '<div class="spec"><b>Frame:</b> 1080 &times; 1920, 9:16. <b>Ground:</b> <span class="mono">#1A1E1F</span> with a faint star field. <b>Lines:</b> thin gold topographic contours, <span class="mono">#A29376</span>, one pixel, flowing left to right and bending around one cyan gate, <span class="mono">#3FD7DC</span>, with a soft glow. The gate is the only lit object. <b>Type:</b> Inter, Paper <span class="mono">#F9F9F8</span>, set in the lower third, tight tracking, appearing in beats. <b>Mark:</b> the dial, bottom right, same size every time. <b>Motion:</b> contours drift slowly, the gate breathes once. <b>Audio:</b> an original low ambient bed, no melody, no whoosh. <b>Never:</b> people, product UI, a second cyan element, hashtags on screen.</div>'
+      + '</section>';
+
+    h += '<section class="section"><h2>Before any of this posts</h2>'
+      + '<div class="rules">'
+      + '<div class="rule"><b>A human approves every substantive post this sprint.</b> The bots may draft, assemble, and schedule. Publishing without a person in the loop breaks the September rule in the strategy doc.</div>'
+      + '<div class="rule"><b>Thursday does not go out until the outlet and date are filled in.</b> Both appear in the caption and stay on screen for the full clip.</div>'
+      + '<div class="rule"><b>Every post carries its proof label.</b> Scenario, Lab demonstration, Sourced report, Design partner result, Customer case. The labels never blur upward.</div>'
+      + '<div class="rule"><b>Stealth holds.</b> No founders, no customer pipeline, no architecture, no security detail, no unannounced partnerships, no investor names.</div>'
+      + '<div class="rule"><b>Links go in the first comment</b> rather than the post body, so reach is not suppressed.</div>'
+      + '</div></section>';
+
+    h += '<footer>Passport Week One &middot; 07 Sep 2026<br>Written to the Passport Brand Guide voice rules and the proof ladder<br>Companion to the Build Roadmap</footer></div>';
+
+    document.getElementById('root').innerHTML = h;
+  }
+
+  function persist(){
+    try{ localStorage.setItem('passport-week-one', JSON.stringify({approved:state.approved})); }catch(e){}
+    if (!writer) return;
+    var css = document.getElementById('app-style').textContent;
+    var js = document.getElementById('app-script').textContent;
+    var json = JSON.stringify(state).replace(/</g,'\\u003c');
+    var doc = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+      + '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
+      + '<title>Passport Week One Posts</title>\n'
+      + '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">\n'
+      + '<style>body{margin:0}</style>\n'
+      + '<style id="app-style">' + css + '<\/style>\n</head>\n<body>\n'
+      + '<div id="root"></div>\n'
+      + '<script id="state" type="application/json">' + json + '<\/script>\n'
+      + '<script id="app-script">' + js + '<\/script>\n</body>\n</html>';
+    writer.publish(doc).catch(function(){});
+  }
+
+  var pending=null;
+  function schedule(){ clearTimeout(pending); pending = setTimeout(persist, 700); }
+
+  function textFor(id){
+    var parts = id.split('-'), day = null;
+    DAYS.concat(IG, TT).forEach(function(d){ if (d.id === parts[0]) day = d; });
+    return day ? (parts[1] === 'a' ? day.a : day.b) : '';
+  }
+
+  function copyText(id, btn){
+    var text = textFor(id);
+    var done = function(){ btn.textContent = 'Copied'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1600); };
+    var fail = function(){ btn.textContent = 'Select it'; setTimeout(function(){ btn.textContent = 'Copy'; }, 2200); };
+    try{
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(function(){ legacy(text) ? done() : fail(); });
+        return;
+      }
+    }catch(e){}
+    legacy(text) ? done() : fail();
+  }
+  function legacy(text){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    }catch(e){ return false; }
+  }
+
+  document.addEventListener('click', function(e){
+    var c = e.target.closest('[data-copy]');
+    if (c){ copyText(c.getAttribute('data-copy'), c); return; }
+    var a = e.target.closest('[data-approve]');
+    if (a){
+      var id = a.getAttribute('data-approve');
+      var parts = id.split('-');
+      var other = parts[0] + '-' + (parts[1] === 'a' ? 'b' : 'a');
+      if (state.approved[id]) delete state.approved[id];
+      else { state.approved[id] = new Date().toISOString().slice(0,10); delete state.approved[other]; }
+      render(); schedule(); return;
+    }
+    var g = e.target.closest('[data-go]');
+    if (g){ var el = document.getElementById(g.getAttribute('data-go')); if (el) el.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+
+  render();
+
+  if (window.claude && window.claude.use){
+    window.claude.use('artifact').then(function(x){ if (x && x.publish){ writer = x; mode='shared'; render(); } }).catch(function(){});
+  }
+})();
+</script>
+
+</body>
+</html>

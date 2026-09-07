@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Passport Brand Guide</title>
+<style>body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#1A1E1F;
+    --ground-deep:#141718;
+    --surface:#232729;
+    --surface-2:#2B2F31;
+    --line:#343A3C;
+    --paper:#F9F9F8;
+    --dim:#9AA2A4;
+    --dim-2:#6E7678;
+    --cyan:#19B7DB;
+    --signal:#3FD7DC;
+    --gold:#A29376;
+    --grey-mark:#575757;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--ground);
+    color:var(--paper);
+    font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    margin:0;
+  }
+  h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.02em;text-wrap:balance;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+  @media (max-width:640px){.wrap{padding:0 20px;}}
+
+  /* ---------- COVER ---------- */
+  .cover{position:relative;background:var(--ground-deep);overflow:hidden;min-height:520px;display:flex;flex-direction:column;justify-content:space-between;}
+  .cover-art{position:absolute;inset:0;width:100%;height:100%;}
+  .cover-inner{position:relative;z-index:2;padding:36px 32px 48px;max-width:1080px;margin:0 auto;width:100%;}
+  @media (max-width:640px){.cover-inner{padding:24px 20px 36px;}}
+  .lockup{display:flex;align-items:center;gap:14px;}
+  .lockup .wordmark{font-size:26px;letter-spacing:-0.025em;line-height:1;}
+  .lockup .wordmark .your{font-weight:300;}
+  .lockup .wordmark .passport{font-weight:700;}
+  .cover-title{margin-top:150px;}
+  .cover-title h1{font-size:clamp(44px,8vw,88px);font-weight:300;letter-spacing:-0.04em;line-height:0.95;}
+  .cover-title h1 b{font-weight:700;}
+  .cover-meta{display:flex;gap:26px;flex-wrap:wrap;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--dim-2);margin-top:26px;}
+
+  /* ---------- NAV ---------- */
+  .navbar{position:sticky;top:0;z-index:20;background:rgba(26,30,31,0.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .navbar-inner{display:flex;gap:2px;overflow-x:auto;max-width:1080px;margin:0 auto;padding:10px 32px;scrollbar-width:none;}
+  .navbar-inner::-webkit-scrollbar{display:none;}
+  .navbar a{flex:none;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:var(--dim);text-decoration:none;padding:6px 11px;border-radius:3px;white-space:nowrap;}
+  .navbar a:hover{color:var(--paper);background:var(--surface);}
+  .navbar a:focus-visible{outline:2px solid var(--signal);outline-offset:1px;}
+  @media (max-width:640px){.navbar-inner{padding:10px 20px;}}
+
+  /* ---------- SECTIONS ---------- */
+  .divider{border-top:1px solid var(--line);padding:64px 0 0;}
+  .divider-head{display:flex;align-items:baseline;gap:20px;}
+  .divider-num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);letter-spacing:0.1em;padding-top:8px;}
+  .divider-head h2{font-size:clamp(38px,6vw,62px);font-weight:700;letter-spacing:-0.045em;line-height:1;}
+  .lede{color:var(--dim);font-size:15.5px;max-width:60ch;margin:18px 0 0;}
+  .block{padding:38px 0;}
+  .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+  h3.h{font-size:19px;margin-bottom:8px;}
+  p{margin:0 0 14px;}
+  p.body{font-size:15px;max-width:62ch;color:#DFE3E3;}
+  .fine{font-size:12.5px;color:var(--dim-2);max-width:62ch;}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:22px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  @media (max-width:820px){.grid-3,.grid-4{grid-template-columns:1fr 1fr;}}
+  @media (max-width:560px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+
+  /* contents */
+  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 48px;}
+  @media (max-width:640px){.toc-grid{grid-template-columns:1fr;}}
+  .toc-item{display:flex;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;}
+  .toc-item .n{font-family:'IBM Plex Mono',monospace;color:var(--dim-2);font-size:12px;width:34px;flex:none;}
+  .toc-item a{color:var(--paper);text-decoration:none;}
+  .toc-item a:hover{color:var(--signal);}
+
+  /* quote */
+  .statement{font-size:clamp(19px,2.6vw,25px);font-weight:300;line-height:1.45;letter-spacing:-0.02em;max-width:28ch;}
+  .statement b{font-weight:600;}
+
+  /* architecture */
+  .arch-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media (max-width:700px){.arch-row{grid-template-columns:1fr;}}
+  .arch-card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:18px;}
+  .arch-card .ctx{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim-2);}
+  .arch-card .val{font-size:17px;font-weight:600;margin:8px 0 6px;letter-spacing:-0.02em;}
+  .arch-card p{font-size:12.5px;color:var(--dim);margin:0;}
+
+  /* sequence */
+  .beats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  @media (max-width:760px){.beats{grid-template-columns:1fr 1fr;}}
+  .beat{border-top:2px solid var(--line);padding-top:12px;}
+  .beat.on{border-top-color:var(--signal);}
+  .beat .bn{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim-2);}
+  .beat .bt{font-weight:600;font-size:15px;margin:4px 0 5px;}
+  .beat p{font-size:12.5px;color:var(--dim);margin:0;}
+
+  /* logo specimens */
+  .spec{background:var(--ground-deep);border:1px solid var(--line);border-radius:4px;display:flex;align-items:center;justify-content:center;padding:34px;min-height:180px;}
+  .spec.paper{background:var(--paper);}
+  .spec-cap{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim-2);margin-top:8px;}
+  .mark-72{width:72px;height:72px;}
+  .mark-120{width:120px;height:120px;}
+  .mark-40{width:40px;height:40px;}
+  .mark-24{width:24px;height:24px;}
+
+  table.specs{width:100%;border-collapse:collapse;font-size:13px;}
+  table.specs td{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top;}
+  table.specs td:first-child{color:var(--dim);width:46%;}
+  table.specs td:last-child{font-family:'IBM Plex Mono',monospace;color:var(--paper);}
+
+  /* do not grid */
+  .dont{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;font-size:12.5px;color:var(--dim);display:flex;gap:10px;align-items:flex-start;}
+  .dont .x{color:#E5674F;font-weight:700;font-size:13px;line-height:1.35;flex:none;}
+
+  /* swatches */
+  .sw{border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .sw .fill{height:96px;}
+  .sw .meta{padding:13px 14px;background:var(--surface);}
+  .sw .nm{font-size:14px;font-weight:600;letter-spacing:-0.01em;}
+  .sw .vals{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);margin-top:4px;line-height:1.5;}
+  .sw .use{font-size:12px;color:var(--dim);margin-top:8px;}
+  .flag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:2px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
+
+  .ratio{display:flex;height:44px;border-radius:3px;overflow:hidden;border:1px solid var(--line);}
+  .ratio div{display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;}
+
+  /* type scale */
+  .tr{display:flex;gap:22px;padding:16px 0;border-bottom:1px solid var(--line);align-items:baseline;flex-wrap:wrap;}
+  .tr .role{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim-2);width:118px;flex:none;}
+  .tr .samp{flex:1;min-width:220px;}
+  .tr .val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);}
+
+  /* voice */
+  .voice{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  @media (max-width:640px){.voice{grid-template-columns:1fr;}}
+  .voice > div{padding:20px;}
+  .voice .say{background:var(--surface);}
+  .voice .avoid{background:var(--ground-deep);border-left:1px solid var(--line);}
+  @media (max-width:640px){.voice .avoid{border-left:none;border-top:1px solid var(--line);}}
+  .voice ul{list-style:none;margin:0;padding:0;display:grid;gap:11px;}
+  .voice li{font-size:14px;}
+  .voice .say li{color:var(--paper);}
+  .voice .avoid li{color:var(--dim-2);text-decoration:line-through;text-decoration-color:#4A5052;}
+
+  /* ladder */
+  .rung{display:flex;gap:16px;padding:15px 0;border-bottom:1px solid var(--line);align-items:baseline;}
+  .rung .lv{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);width:26px;flex:none;}
+  .rung .nm{font-weight:600;font-size:15px;width:190px;flex:none;letter-spacing:-0.01em;}
+  .rung .ds{font-size:13px;color:var(--dim);flex:1;min-width:200px;}
+  @media (max-width:640px){.rung{flex-wrap:wrap;gap:8px;}.rung .nm{width:auto;}.rung .ds{flex-basis:100%;}}
+
+  /* mockups */
+  .mock-frame{border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .mock-bar{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim-2);padding:9px 14px;background:var(--surface);border-bottom:1px solid var(--line);}
+  .social{aspect-ratio:1/1;background:var(--ground-deep);padding:28px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+  .social .sk{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);position:relative;z-index:2;}
+  .social .sh{font-size:22px;font-weight:600;letter-spacing:-0.025em;line-height:1.25;margin-top:12px;position:relative;z-index:2;}
+  .social .sf{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:2;}
+  .social .handle{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim-2);}
+  .sig{background:var(--paper);color:#1A1E1F;padding:24px;}
+  .sig .nm{font-size:16px;font-weight:600;letter-spacing:-0.02em;}
+  .sig .ttl{font-size:12.5px;color:#5B6265;margin-top:2px;}
+  .sig .rule{height:1px;background:#DCDEDD;margin:14px 0;}
+  .sig .ln{display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5B6265;}
+
+  /* checklist / governance */
+  .chk{border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .chk-row{display:flex;gap:12px;padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--line);font-size:13.5px;}
+  .chk-row:last-child{border-bottom:none;}
+  .chk-row .bx{width:14px;height:14px;border:1.5px solid var(--dim-2);border-radius:2px;flex:none;margin-top:3px;}
+  .open-item{border-left:2px solid var(--gold);padding:4px 0 4px 14px;margin-bottom:16px;}
+  .open-item .q{font-weight:600;font-size:14.5px;margin-bottom:3px;}
+  .open-item p{font-size:13px;color:var(--dim);margin:0;}
+
+  footer{border-top:1px solid var(--line);margin-top:56px;padding:26px 0 60px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim-2);letter-spacing:0.04em;}
+  @media (prefers-reduced-motion:no-preference){
+    .cover-art .flow{animation:drift 26s ease-in-out infinite alternate;}
+    @keyframes drift{from{opacity:0.82;}to{opacity:1;}}
+  }
+</style>
+
+<header class="cover">
+  <svg class="cover-art" viewBox="0 0 1400 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="7" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <rect width="1400" height="520" fill="#141718"/>
+    <g id="stars"></g>
+    <g id="flow" class="flow" fill="none"></g>
+  </svg>
+  <div class="cover-inner">
+    <div class="lockup">
+      <svg class="mark-40 js-mark" viewBox="0 0 100 100" aria-label="Your Passport mark"></svg>
+      <div class="wordmark"><span class="your">Your</span><span class="passport">Passport</span></div>
+    </div>
+    <div class="cover-title">
+      <h1>Brand<br><b>Guide</b></h1>
+    </div>
+    <div class="cover-meta mono">
+      <span>Version 1.0</span>
+      <span>07 Sep 2026</span>
+      <span style="color:#3FD7DC;">Final, pending Paris review</span>
+    </div>
+    <p class="fine" style="max-width:54ch;margin-top:14px;">This is the brand document of record for Passport. Once Paris signs off on the three open decisions in section 9.1, it is final and everything else gets built from it.</p>
+  </div>
+</header>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="#contents">1.0 Contents</a>
+    <a href="#brand">2.0 The brand</a>
+    <a href="#logo">3.0 The logo</a>
+    <a href="#color">4.0 Color</a>
+    <a href="#type">5.0 Typography</a>
+    <a href="#voice">6.0 Voice</a>
+    <a href="#imagery">7.0 Imagery</a>
+    <a href="#apps">8.0 Applications</a>
+    <a href="#rules">9.0 Rules</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1.0 CONTENTS -->
+  <section id="contents" class="divider">
+    <div class="divider-head"><span class="divider-num">1.0</span><h2>contents</h2></div>
+    <div class="block">
+      <div class="toc-grid">
+        <div>
+          <div class="toc-item"><span class="n">2.0</span><a href="#brand">The brand</a></div>
+          <div class="toc-item"><span class="n">2.1</span><a href="#brand">Positioning statement</a></div>
+          <div class="toc-item"><span class="n">2.2</span><a href="#brand">Claims we never make</a></div>
+          <div class="toc-item"><span class="n">2.3</span><a href="#brand">Brand architecture</a></div>
+          <div class="toc-item"><span class="n">2.4</span><a href="#brand">The narrative in five beats</a></div>
+          <div class="toc-item"><span class="n">3.0</span><a href="#logo">The logo</a></div>
+          <div class="toc-item"><span class="n">3.1</span><a href="#logo">The mark</a></div>
+          <div class="toc-item"><span class="n">3.2</span><a href="#logo">The wordmark</a></div>
+          <div class="toc-item"><span class="n">3.3</span><a href="#logo">Lockups</a></div>
+          <div class="toc-item"><span class="n">3.4</span><a href="#logo">Clear space and minimum size</a></div>
+          <div class="toc-item"><span class="n">3.5</span><a href="#logo">Logo rules</a></div>
+          <div class="toc-item"><span class="n">4.0</span><a href="#color">Color</a></div>
+          <div class="toc-item"><span class="n">4.1</span><a href="#color">Core palette</a></div>
+          <div class="toc-item"><span class="n">4.2</span><a href="#color">Values in the live assets</a></div>
+        </div>
+        <div>
+          <div class="toc-item"><span class="n">4.3</span><a href="#color">Hierarchy and ratio</a></div>
+          <div class="toc-item"><span class="n">5.0</span><a href="#type">Typography</a></div>
+          <div class="toc-item"><span class="n">5.1</span><a href="#type">Overview</a></div>
+          <div class="toc-item"><span class="n">5.2</span><a href="#type">Scale and hierarchy</a></div>
+          <div class="toc-item"><span class="n">6.0</span><a href="#voice">Voice</a></div>
+          <div class="toc-item"><span class="n">6.1</span><a href="#voice">Personality</a></div>
+          <div class="toc-item"><span class="n">6.2</span><a href="#voice">Say and avoid</a></div>
+          <div class="toc-item"><span class="n">6.3</span><a href="#voice">The proof ladder</a></div>
+          <div class="toc-item"><span class="n">7.0</span><a href="#imagery">Imagery</a></div>
+          <div class="toc-item"><span class="n">8.0</span><a href="#apps">Applications</a></div>
+          <div class="toc-item"><span class="n">8.1</span><a href="#apps">Social</a></div>
+          <div class="toc-item"><span class="n">8.2</span><a href="#apps">Email signature</a></div>
+          <div class="toc-item"><span class="n">9.0</span><a href="#rules">Rules of the road</a></div>
+          <div class="toc-item"><span class="n">9.1</span><a href="#rules">Open decisions</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2.0 THE BRAND -->
+  <section id="brand" class="divider">
+    <div class="divider-head"><span class="divider-num">2.0</span><h2>the brand</h2></div>
+    <p class="lede">Passport makes every AI agent identifiable, verifiable, and accountable before it is allowed to act. Everything in this guide serves that one sentence.</p>
+
+    <div class="block">
+      <div class="sub">2.1 Positioning statement</div>
+      <div class="panel">
+        <p class="statement">For teams deploying AI agents into sensitive workflows, Passport is <b>authorization and evidence infrastructure</b> that binds an agent to an owner, a bounded capability, a policy decision, and verifiable proof, so automation can move quickly while action stays attached to human authority.</p>
+      </div>
+      <p class="fine" style="margin-top:12px;">Short form for category conversations: the permission layer for agents.</p>
+    </div>
+
+    <div class="block">
+      <div class="sub">2.2 Claims we never make</div>
+      <div class="grid-3">
+        <div class="panel"><h3 class="h">Generic IAM</h3><p class="fine">Passport governs what an agent may do in a single consequential moment. Identity and access management covers a different scope, and equating them oversells us into the wrong bake-off.</p></div>
+        <div class="panel"><h3 class="h">Proof of humanity</h3><p class="fine">Passport verifies an authorization decision. It makes no statement about whether a human being is real or present.</p></div>
+        <div class="panel"><h3 class="h">Unhackable systems</h3><p class="fine">No claim of zero risk, ever. A receipt proves Passport's decision. It does not promise a downstream system executed the outcome.</p></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="sub">2.3 Brand architecture</div>
+      <div class="arch-row">
+        <div class="arch-card"><span class="ctx">Logo and site</span><div class="val">Your Passport</div><p>The full wordmark as it appears in the lockup, on yourpassport.ai and on social profiles.</p></div>
+        <div class="arch-card"><span class="ctx">Body copy and product</span><div class="val">Passport</div><p>The short form in sentences, captions, decks, and the product interface.</p></div>
+        <div class="arch-card"><span class="ctx">Legal and procurement</span><div class="val">Passport, an Ultrium company</div><p>Contracts, investor documents, and vendor forms only. Keep it out of customer-facing copy.</p></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="sub">2.4 The narrative in five beats</div>
+      <div class="beats">
+        <div class="beat"><span class="bn">01</span><div class="bt">Trust</div><p>Agents now act. They do more than generate text.</p></div>
+        <div class="beat"><span class="bn">02</span><div class="bt">Permission</div><p>Credentials and prompts leave the question of who authorized the action unanswered.</p></div>
+        <div class="beat"><span class="bn">03</span><div class="bt">Scope</div><p>Permission has to be bounded by resource, action, value, risk, and time.</p></div>
+        <div class="beat"><span class="bn">04</span><div class="bt">Proof</div><p>A durable, signed record has to remain after the action.</p></div>
+        <div class="beat on"><span class="bn">05</span><div class="bt">Passport</div><p>The model proposes. Passport decides. The organization can verify.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3.0 LOGO -->
+  <section id="logo" class="divider">
+    <div class="divider-head"><span class="divider-num">3.0</span><h2>the logo</h2></div>
+    <p class="lede">The mark is a scanning dial: twenty four segments around a fixed center, eight of them lit. It reads as a system checking something before it opens.</p>
+
+    <div class="block">
+      <div class="sub">3.1 The mark</div>
+      <div class="grid-2">
+        <div>
+          <div class="spec"><svg class="mark-120 js-mark" viewBox="0 0 100 100" aria-label="Passport mark"></svg></div>
+          <div class="spec-cap">Primary. Paper and grey on dark ground.</div>
+        </div>
+        <div>
+          <table class="specs">
+            <tr><td>Segments</td><td>24</td></tr>
+            <tr><td>Angular pitch</td><td>15.0&deg;</td></tr>
+            <tr><td>Segment width / gap</td><td>13.3&deg; / 1.7&deg;</td></tr>
+            <tr><td>Lit segments</td><td>8, every third, at 45&deg; intervals</td></tr>
+            <tr><td>Lit color</td><td>#F9F9F8</td></tr>
+            <tr><td>Unlit color</td><td>#575757</td></tr>
+            <tr><td>Segment band</td><td>65% to 100% of radius</td></tr>
+            <tr><td>Inner ring</td><td>44% of radius, hairline</td></tr>
+            <tr><td>Center dot</td><td>17.6% of radius, #F9F9F8</td></tr>
+          </table>
+        </div>
+      </div>
+      <p class="fine" style="margin-top:14px;">On the site the dial is rendered live in code and rotates. Rebuild the motion from these values when it is needed in video. Exporting a single frame and animating that frame produces a different object.</p>
+    </div>
+
+    <div class="block">
+      <div class="sub">3.2 The wordmark</div>
+      <div class="spec"><div class="wordmark" style="font-size:38px;letter-spacing:-0.025em;"><span class="your" style="font-weight:300;">Your</span><span class="passport" style="font-weight:700;">Passport</span></div></div>
+      <div class="spec-cap">Two words, set solid with no space between them. "Your" at Light 300, "Passport" at Bold 700, both in Paper.</div>
+      <p class="body" style="margin-top:16px;">The weight change carries the whole idea: the passport belongs to the person, and the thing that acts under it does not. Never set both words at the same weight, and never insert a space or a hyphen between them.</p>
+    </div>
+
+    <div class="block">
+      <div class="sub">3.3 Lockups</div>
+      <div class="grid-3">
+        <div>
+          <div class="spec"><div class="lockup"><svg class="mark-40 js-mark" viewBox="0 0 100 100" aria-hidden="true"></svg><div class="wordmark" style="font-size:23px;"><span class="your" style="font-weight:300;">Your</span><span class="passport" style="font-weight:700;">Passport</span></div></div></div>
+          <div class="spec-cap">Horizontal. Default everywhere.</div>
+        </div>
+        <div>
+          <div class="spec"><svg class="mark-72 js-mark" viewBox="0 0 100 100" aria-hidden="true"></svg></div>
+          <div class="spec-cap">Mark alone. Avatars, favicons, video stings.</div>
+        </div>
+        <div>
+          <div class="spec paper"><div class="lockup"><svg class="mark-40 js-mark" viewBox="0 0 100 100" data-theme="light" aria-hidden="true"></svg><div class="wordmark" style="font-size:23px;color:#1A1E1F;"><span class="your" style="font-weight:300;">Your</span><span class="passport" style="font-weight:700;">Passport</span></div></div></div>
+          <div class="spec-cap">On Paper. Ink wordmark, Ink and grey mark.</div>
+        </div>
+      </div>
+      <p class="fine" style="margin-top:14px;">Gap between mark and wordmark equals the cap height of the letter P. Vertically center the mark on the wordmark's cap height, not on its baseline.</p>
+    </div>
+
+    <div class="block">
+      <div class="sub">3.4 Clear space and minimum size</div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3 class="h">Clear space</h3>
+          <p class="fine">Keep clear space equal to the mark's radius on all four sides of the lockup. Nothing enters that space: no type, no rules, no image edges, no contour lines.</p>
+        </div>
+        <div class="panel">
+          <h3 class="h">Minimum size</h3>
+          <p class="fine">Mark alone: 24&nbsp;px on screen, 8&nbsp;mm in print. Full lockup: 120&nbsp;px wide on screen, 32&nbsp;mm in print. Below 24&nbsp;px the segment gaps close up and the dial reads as a solid ring.</p>
+          <div style="display:flex;align-items:flex-end;gap:16px;margin-top:14px;">
+            <svg class="mark-24 js-mark" viewBox="0 0 100 100" aria-hidden="true"></svg>
+            <span class="mono" style="font-size:10.5px;color:var(--dim-2);">24 px floor</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="sub">3.5 Logo rules</div>
+      <div class="grid-3">
+        <div class="dont"><span class="x">&#10005;</span><span>Do not recolor the lit segments. They stay Paper on dark and Ink on light.</span></div>
+        <div class="dont"><span class="x">&#10005;</span><span>Do not add glow, shadow, bevel, or gradient to the mark.</span></div>
+        <div class="dont"><span class="x">&#10005;</span><span>Do not stretch, squash, or crop the dial to fit a container.</span></div>
+        <div class="dont"><span class="x">&#10005;</span><span>Do not redraw the segments by hand. Generate them from the values in 3.1.</span></div>
+        <div class="dont"><span class="x">&#10005;</span><span>Do not place the lockup on busy imagery without a solid scrim behind it.</span></div>
+        <div class="dont"><span class="x">&#10005;</span><span>Do not pair the mark with a second logo inside the clear space.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.0 COLOR -->
+  <section id="color" class="divider">
+    <div class="divider-head"><span class="divider-num">4.0</span><h2>color</h2></div>
+    <p class="lede">Three colors carry the brand. Everything else is structure. Cyan marks the moment a decision happens, which is why it appears in small quantities and nowhere else.</p>
+
+    <div class="block">
+      <div class="sub">4.1 Core palette</div>
+      <div class="grid-3">
+        <div class="sw"><div class="fill" style="background:#181818;"></div><div class="meta"><div class="nm">Ink</div><div class="vals">#181818<br>rgb(24, 24, 24)</div><div class="use">Text on Paper. Print grounds. The color of authority in the system.</div></div></div>
+        <div class="sw"><div class="fill" style="background:#F9F9F8;"></div><div class="meta"><div class="nm">Paper</div><div class="vals">#F9F9F8<br>rgb(249, 249, 248)</div><div class="use">All display type on dark. Lit segments. Light grounds.</div></div></div>
+        <div class="sw"><div class="fill" style="background:#19B7DB;"></div><div class="meta"><div class="nm">Cyan</div><div class="vals">#19B7DB<br>rgb(25, 183, 219)</div><div class="use">The single accent. Gates, seals, the verified moment.</div></div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="sub">4.2 Values in the live assets</div>
+      <p class="body">These are sampled directly from the investor deck, the banner, and the logo file. Three of them sit close to the core palette without matching it, which is a decision to settle before the next batch of assets goes out.</p>
+      <div class="grid-4">
+        <div class="sw"><div class="fill" style="background:#1A1E1F;"></div><div class="meta"><div class="nm">Deep Space<span class="flag">live</span></div><div class="vals">#1A1E1F</div><div class="use">The deck and banner ground. Cooler and greener than Ink.</div></div></div>
+        <div class="sw"><div class="fill" style="background:#3FD7DC;"></div><div class="meta"><div class="nm">Signal Cyan<span class="flag">live</span></div><div class="vals">#3FD7DC</div><div class="use">The glowing gate. Brighter and greener than Cyan.</div></div></div>
+        <div class="sw"><div class="fill" style="background:#A29376;"></div><div class="meta"><div class="nm">Contour Gold<span class="flag">live</span></div><div class="vals">#A29376</div><div class="use">Topographic lines behind the gate. Highlights reach #E7D7BD.</div></div></div>
+        <div class="sw"><div class="fill" style="background:#575757;"></div><div class="meta"><div class="nm">Mark Grey<span class="flag">live</span></div><div class="vals">#575757</div><div class="use">Unlit dial segments. Use it only inside the mark.</div></div></div>
+      </div>
+      <div class="panel" style="margin-top:16px;border-left:2px solid var(--gold);">
+        <h3 class="h">Decision needed</h3>
+        <p class="fine" style="margin:0;">The strategy doc specifies Ink #181818 and Cyan #19B7DB. The shipped deck runs on #1A1E1F and #3FD7DC. Both pairs are defensible. Pick one set, write it here, and rebuild whichever asset is on the losing value. Running both means every future designer guesses.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="sub">4.3 Hierarchy and ratio</div>
+      <div class="ratio">
+        <div style="background:#1A1E1F;flex:70;color:#9AA2A4;border-right:1px solid var(--line);">Ground 70%</div>
+        <div style="background:#F9F9F8;flex:24;color:#1A1E1F;">Paper 24%</div>
+        <div style="background:#A29376;flex:4;color:#1A1E1F;"></div>
+        <div style="background:#3FD7DC;flex:2;color:#0E3A3D;"></div>
+      </div>
+      <p class="fine" style="margin-top:12px;">Roughly seventy percent dark ground, a quarter Paper type, a thin band of gold structure, and a sliver of cyan. When cyan covers more than a headline, an icon, or a single line, it has stopped meaning anything.</p>
+      <p class="fine">Contrast: Paper on Deep Space passes AA at every size. Cyan on Deep Space passes for large text and interface elements. For cyan text under 18&nbsp;px on Paper, darken to #0E6B80.</p>
+    </div>
+  </section>
+
+  <!-- 5.0 TYPE -->
+  <section id="type" class="divider">
+    <div class="divider-head"><span class="divider-num">5.0</span><h2>typography</h2></div>
+    <p class="lede">One neo-grotesque carries the voice, and one monospace carries the evidence. The split is doing real work: anything that reads as a record is set in mono.</p>
+
+    <div class="block">
+      <div class="sub">5.1 Overview</div>
+      <div class="grid-2">
+        <div class="panel">
+          <div style="font-size:40px;font-weight:600;letter-spacing:-0.03em;line-height:1.1;">Aa</div>
+          <h3 class="h" style="margin-top:10px;">Inter</h3>
+          <p class="fine">Display, headings, body, interface. Weights 300, 400, 600, 700. Tighten tracking to -0.02em at 24&nbsp;px and above, and to -0.04em on display sizes.</p>
+        </div>
+        <div class="panel">
+          <div class="mono" style="font-size:40px;font-weight:500;line-height:1.1;">Aa</div>
+          <h3 class="h" style="margin-top:10px;">IBM Plex Mono</h3>
+          <p class="fine">Labels, receipts, identifiers, values, timestamps, code. Weights 400 and 500. Uppercase labels take 0.12em tracking.</p>
+        </div>
+      </div>
+      <p class="fine" style="margin-top:14px;">Confirm against the live site before this is treated as final. Paris owns the implemented stack, and the wordmark may be drawn in a licensed grotesque rather than Inter.</p>
+    </div>
+
+    <div class="block">
+      <div class="sub">5.2 Scale and hierarchy</div>
+      <div class="tr"><span class="role">Display</span><div class="samp" style="font-size:36px;font-weight:700;letter-spacing:-0.04em;line-height:1.05;">Bound the action</div><span class="val">700 / 56px / -0.04em</span></div>
+      <div class="tr"><span class="role">Heading</span><div class="samp" style="font-size:24px;font-weight:600;letter-spacing:-0.02em;">Name the approver</div><span class="val">600 / 28px / -0.02em</span></div>
+      <div class="tr"><span class="role">Body</span><div class="samp" style="font-size:15px;">A durable, signed record remains after the agent acts, which is what makes the decision defensible later.</div><span class="val">400 / 16px / 1.6</span></div>
+      <div class="tr"><span class="role">Caption</span><div class="samp" style="font-size:13px;color:var(--dim);">Supporting detail, photo credits, footnotes.</div><span class="val">400 / 13px</span></div>
+      <div class="tr"><span class="role">Label</span><div class="samp mono" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);">Field note 014</div><span class="val">Mono 500 / 11px / 0.12em</span></div>
+      <div class="tr"><span class="role">Record</span><div class="samp mono" style="font-size:13px;">receipt 8f21-caa0 &middot; decision ALLOW &middot; risk 2/10</div><span class="val">Mono 400 / 13px</span></div>
+    </div>
+  </section>
+
+  <!-- 6.0 VOICE -->
+  <section id="voice" class="divider">
+    <div class="divider-head"><span class="divider-num">6.0</span><h2>voice</h2></div>
+    <p class="lede">Calm, exact, human centerd, technically credible, quietly urgent. If a line would work on a trade show banner, it is too loud for Passport.</p>
+
+    <div class="block">
+      <div class="sub">6.2 Say and avoid</div>
+      <div class="voice">
+        <div class="say">
+          <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--signal);margin-bottom:14px;">Say</div>
+          <ul>
+            <li>The model proposes. Passport decides.</li>
+            <li>Give agents permission. Keep people accountable.</li>
+            <li>Bound the action. Name the approver. Keep the proof.</li>
+            <li>Every sensitive action deserves a verifiable decision.</li>
+          </ul>
+        </div>
+        <div class="avoid">
+          <div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim-2);margin-bottom:14px;">Avoid</div>
+          <ul>
+            <li>Unhackable</li>
+            <li>Zero risk</li>
+            <li>Passport proves a human is real</li>
+            <li>Passport replaces IAM</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="sub">6.3 The proof ladder</div>
+      <p class="body">Every public claim carries one of these labels, stated plainly in the post or the asset. The labels never blur upward, and a claim never borrows credibility from the rung above it.</p>
+      <div style="margin-top:18px;">
+        <div class="rung"><span class="lv">00</span><span class="nm">Sourced report</span><span class="ds">Published reporting or an official document from a third party. Name the outlet and the date in the asset itself, link the original, and quote regulatory text rather than paraphrasing it into a requirement. Used to establish the problem, never to imply a Passport result.</span></div>
+        <div class="rung"><span class="lv">01</span><span class="nm">Scenario</span><span class="ds">A hypothetical, labeled as hypothetical on the face of the asset.</span></div>
+        <div class="rung"><span class="lv">02</span><span class="nm">Lab demonstration</span><span class="ds">The Passport team reproduced it internally. Say what was reproduced and in what environment.</span></div>
+        <div class="rung"><span class="lv">03</span><span class="nm">Design partner result</span><span class="ds">An external team tested it outside production. Named only with their written approval.</span></div>
+        <div class="rung"><span class="lv">04</span><span class="nm">Customer case</span><span class="ds">Production use with approved disclosure. The only rung that may carry a customer name.</span></div>
+      </div>
+      <div class="panel" style="margin-top:18px;">
+        <h3 class="h">Handling news</h3>
+        <p class="fine" style="margin:0;">A news clip earns its place when the incident is documented and the outlet is named on screen. Keep the outlet name and date visible for the full time the footage runs, cut nothing that changes what the reporting said, and let the incident speak before Passport appears. The proof rule applies to the brand as much as to the product.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7.0 IMAGERY -->
+  <section id="imagery" class="divider">
+    <div class="divider-head"><span class="divider-num">7.0</span><h2>imagery</h2></div>
+    <p class="lede">The visual world is the one built for the investor deck: deep space ground, a faint star field, thin gold contour lines, and one lit gate.</p>
+
+    <div class="block">
+      <div class="grid-2">
+        <div>
+          <div class="mock-frame">
+            <svg viewBox="0 0 700 300" style="display:block;width:100%;background:#141718;" aria-label="Deck imagery example">
+              <g id="stars-2"></g>
+              <g id="flow-2" fill="none"></g>
+            </svg>
+          </div>
+          <div class="spec-cap">Contour lines bend around the gate. The gate is the only lit object in frame.</div>
+        </div>
+        <div>
+          <h3 class="h">What the picture is saying</h3>
+          <p class="fine">The contour lines are every path an agent could take. They run everywhere, unlabeled and unbounded. The gate is the one place a path narrows to a single opening, and the light marks the moment the decision is made. Read left to right, the frame moves from open ground to a bounded, accountable path.</p>
+          <div style="margin-top:18px;">
+            <div class="dont" style="margin-bottom:10px;"><span class="x">&#10005;</span><span>More than one cyan focal point in a single frame.</span></div>
+            <div class="dont" style="margin-bottom:10px;"><span class="x">&#10005;</span><span>Contour lines heavier than one pixel, or crossing in front of the gate.</span></div>
+            <div class="dont"><span class="x">&#10005;</span><span>People in default visuals. Show a person only when a specific human decision is the subject of the shot.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8.0 APPLICATIONS -->
+  <section id="apps" class="divider">
+    <div class="divider-head"><span class="divider-num">8.0</span><h2>applications</h2></div>
+    <p class="lede">Every surface follows the same construction: dark ground, one accent, mono for anything that reads as a record.</p>
+
+    <div class="block">
+      <div class="grid-2">
+        <div>
+          <div class="mock-frame">
+            <div class="mock-bar">8.1 Social, 1080 &times; 1080</div>
+            <div class="social">
+              <svg viewBox="0 0 400 400" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.5;" aria-hidden="true"><g id="flow-3" fill="none"></g></svg>
+              <div>
+                <div class="sk">The permission gap</div>
+                <div class="sh">Your agent can initiate a refund. Who decided its limit?</div>
+              </div>
+              <div class="sf">
+                <span class="handle">yourpassport.ai</span>
+                <svg class="mark-24 js-mark" viewBox="0 0 100 100" aria-hidden="true"></svg>
+              </div>
+            </div>
+          </div>
+          <div class="spec-cap">Kicker names the pillar. Headline asks the question. Mark sits bottom right, always at the same size.</div>
+        </div>
+        <div>
+          <div class="mock-frame">
+            <div class="mock-bar">8.2 Email signature</div>
+            <div class="sig">
+              <div class="nm">Kalena Gardner</div>
+              <div class="ttl">Passport</div>
+              <div class="rule"></div>
+              <div class="ln">
+                <svg class="mark-24 js-mark" viewBox="0 0 100 100" data-theme="light" aria-hidden="true" style="width:18px;height:18px;"></svg>
+                yourpassport.ai
+              </div>
+            </div>
+          </div>
+          <div class="spec-cap">Name, brand, rule, mark and domain. Nothing else, and no legal entity line.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9.0 RULES -->
+  <section id="rules" class="divider">
+    <div class="divider-head"><span class="divider-num">9.0</span><h2>rules of the road</h2></div>
+    <p class="lede">Five checks before anything leaves the building.</p>
+
+    <div class="block">
+      <div class="chk">
+        <div class="chk-row"><span class="bx"></span><span>Every result claim carries its proof ladder label, and every news source carries its outlet and date.</span></div>
+        <div class="chk-row"><span class="bx"></span><span>A human approved this post. Automation drafts and schedules. It does not publish on its own during this sprint.</span></div>
+        <div class="chk-row"><span class="bx"></span><span>Customer facing copy says Passport. Legal and procurement copy says Passport, an Ultrium company.</span></div>
+        <div class="chk-row"><span class="bx"></span><span>Cyan appears once in the frame, on the thing that matters.</span></div>
+        <div class="chk-row"><span class="bx"></span><span>Nothing under stealth appears: founders, pipeline, non public architecture, unannounced partnerships.</span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="sub">9.1 Open decisions</div>
+      <div class="open-item">
+        <div class="q">Which dark and which cyan</div>
+        <p>Ink #181818 with Cyan #19B7DB from the strategy doc, or Deep Space #1A1E1F with Signal Cyan #3FD7DC from the shipped deck. One set wins and the other assets get rebuilt.</p>
+      </div>
+      <div class="open-item">
+        <div class="q">The typeface on record</div>
+        <p>Inter is the recommendation here. Paris confirms what the site actually loads and whether the wordmark is drawn in something licensed.</p>
+      </div>
+      <div class="open-item">
+        <div class="q">What gold is allowed to do</div>
+        <p>Contour Gold is live in the deck. Decide whether it is a permanent second accent or scenery that stays inside deck imagery.</p>
+      </div>
+      <div class="grid-2" style="margin-top:26px;">
+        <div class="panel"><div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim-2);">Brand and content</div><h3 class="h" style="margin-top:6px;">Kalena</h3><p class="fine" style="margin:0;">Voice, messaging, content calendar, what ships publicly and when.</p></div>
+        <div class="panel"><div class="mono" style="font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim-2);">Visual and technical system</div><h3 class="h" style="margin-top:6px;">Paris</h3><p class="fine" style="margin:0;">Site implementation, the live mark, and the source of truth for anything this guide could not confirm.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Passport Brand Guide v1.0 &middot; 07 Sep 2026 &middot; built on the Brand Strategy and GTM System v1.0 &middot; color and mark values sampled from the live logo file and investor deck</footer>
+</main>
+
+<script>
+(function(){
+  var SEGMENTS = 24, PITCH = 360/24, HALF = 6.65, OFFSET = 4.7;
+  var RO = 50, RI = 32.6, RING = 21.9, DOT = 8.8;
+
+  function pt(a, r){
+    var rad = (a - 90) * Math.PI / 180;
+    return [(50 + r*Math.cos(rad)).toFixed(2), (50 + r*Math.sin(rad)).toFixed(2)];
+  }
+  function seg(a0, a1, ri, ro){
+    var p1 = pt(a0, ro), p2 = pt(a1, ro), p3 = pt(a1, ri), p4 = pt(a0, ri);
+    return 'M' + p1 + 'A' + ro + ',' + ro + ' 0 0 1 ' + p2 + 'L' + p3 + 'A' + ri + ',' + ri + ' 0 0 0 ' + p4 + 'Z';
+  }
+  function drawMark(svg){
+    var light = svg.getAttribute('data-theme') === 'light';
+    var lit = light ? '#181818' : '#F9F9F8';
+    var unlit = light ? '#A8A8A8' : '#575757';
+    var ring = light ? '#C9CBCA' : '#4A4A4A';
+    var out = '';
+    for (var i = 0; i < SEGMENTS; i++){
+      var c = OFFSET + i * PITCH;
+      out += '<path d="' + seg(c - HALF, c + HALF, RI, RO) + '" fill="' + (i % 3 === 0 ? lit : unlit) + '"/>';
+    }
+    out += '<circle cx="50" cy="50" r="' + RING + '" fill="none" stroke="' + ring + '" stroke-width="1.1"/>';
+    out += '<circle cx="50" cy="50" r="' + DOT + '" fill="' + lit + '"/>';
+    svg.innerHTML = out;
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.js-mark'), drawMark);
+
+  // deterministic pseudo random
+  var seed = 20260907;
+  function rnd(){ seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+
+  function stars(el, w, h, n){
+    if (!el) return;
+    var s = '';
+    for (var i = 0; i < n; i++){
+      var x = (rnd()*w).toFixed(1), y = (rnd()*h).toFixed(1);
+      var r = (rnd()*0.9 + 0.25).toFixed(2), o = (rnd()*0.5 + 0.12).toFixed(2);
+      s += '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#F9F9F8" opacity="'+o+'"/>';
+    }
+    el.innerHTML = s;
+  }
+
+  function arches(el, opts){
+    if (!el) return;
+    var cx = opts.cx, base = opts.base, n = opts.n, s = '';
+    for (var k = n - 1; k >= 0; k--){
+      var w = opts.w0 + k * opts.step;
+      var top = opts.top - k * opts.rise;
+      var lx = cx - w, rx = cx + w;
+      var edgeY = opts.edge + k * opts.spread;
+      var d = 'M' + (-20) + ',' + edgeY
+            + 'C' + (cx - opts.pull - k*8) + ',' + edgeY + ' ' + (lx - 6) + ',' + base + ' ' + lx + ',' + (top + w)
+            + 'A' + w + ',' + w + ' 0 0 1 ' + rx + ',' + (top + w)
+            + 'C' + (rx + 6) + ',' + base + ' ' + (cx + opts.pull + k*8) + ',' + edgeY + ' ' + (opts.w + 20) + ',' + edgeY;
+      var cyan = k < 3;
+      var stroke = cyan ? '#3FD7DC' : '#A29376';
+      var op = cyan ? (0.95 - k*0.18) : Math.max(0.10, 0.52 - k*0.017);
+      s += '<path d="' + d + '" stroke="' + stroke + '" stroke-width="' + (cyan ? 1.6 : 1) + '" opacity="' + op.toFixed(2) + '"'
+         + (cyan ? ' filter="url(#glow)"' : '') + '/>';
+    }
+    el.innerHTML = s;
+  }
+
+  stars(document.getElementById('stars'), 1400, 520, 150);
+  arches(document.getElementById('flow'), {cx:980, w:1400, w0:26, step:15, top:250, rise:11, base:560, edge:430, spread:11, pull:250, n:22});
+
+  stars(document.getElementById('stars-2'), 700, 300, 60);
+  arches(document.getElementById('flow-2'), {cx:400, w:700, w0:18, step:11, top:150, rise:7, base:330, edge:250, spread:7, pull:140, n:16});
+
+  arches(document.getElementById('flow-3'), {cx:300, w:400, w0:14, step:10, top:120, rise:6, base:430, edge:330, spread:8, pull:110, n:14});
+})();
+</script>
+
+</body>
+</html>
