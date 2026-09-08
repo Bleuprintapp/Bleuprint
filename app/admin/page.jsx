@@ -1,5 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import PortalShell from "./portal-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -13,23 +14,5 @@ export default async function AdminPortal() {
     if (emailFor(user) !== "kalenagardner07@gmail.com") redirect("/portal");
   }
 
-  return (
-    <main className="portal-experience-shell">
-      <a
-        className="portal-campaign-shortcut"
-        href="/admin/experience?open=campaign"
-        target="bleuprint-portal"
-      >
-        <span>+</span>
-        Campaign generator
-      </a>
-      <iframe
-        className="portal-experience-frame"
-        src="/admin/experience"
-        name="bleuprint-portal"
-        title="Bleuprint Intelligence Portal — Passport"
-        allow="clipboard-write"
-      />
-    </main>
-  );
+  return <PortalShell />;
 }
