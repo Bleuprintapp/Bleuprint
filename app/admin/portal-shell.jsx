@@ -83,7 +83,7 @@ export default function PortalShell({ member }) {
     <nav className="portal-quick-actions" aria-label={`Portal shortcuts for ${member?.name || "member"}`}>
       <a href="/account"><span>○</span>{member?.name || "Account"}</a>
       <button onClick={() => { refreshArchive(); setArchiveOpen(true); }}><span>↘</span>Archive</button>
-      <a href="/admin/experience?open=campaign" target="bleuprint-portal"><span>+</span>Campaign generator</a>
+      <a href="/content-studio"><span>+</span>Content system</a>
     </nav>
     {workspaceReady ? <iframe ref={frameRef} onLoad={connectFrame} className="portal-experience-frame" src="/admin/experience" name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write" /> : null}
     {archiveOpen ? <div className="portal-archive-layer" onClick={() => setArchiveOpen(false)}>

@@ -4,7 +4,7 @@ import { getServerMember } from "../../../lib/server-member";
 
 export const dynamic = "force-dynamic";
 const WORKSPACE = "passport";
-const ALLOWED_KEYS = new Set(["archive", "calendar"]);
+const ALLOWED_KEYS = new Set(["archive", "calendar", "campaigns", "contentSettings"]);
 
 export async function GET() {
   const member = await getServerMember();

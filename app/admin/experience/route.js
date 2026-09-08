@@ -33,12 +33,30 @@ window.addEventListener("DOMContentLoaded", function () {
 });
 </script>`;
 
+const portalReliability = `<script>
+window.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape") return;
+    var close = Array.from(document.querySelectorAll("button")).find(function (button) { return button.offsetParent && (button.textContent.trim() === "×" || button.textContent.trim() === "Done"); });
+    if (close) close.click();
+  });
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest && event.target.closest("button");
+    if (!button) return;
+    if (button.textContent.includes("Ask Bleuprint")) {
+      event.preventDefault(); event.stopImmediatePropagation(); window.top.location.href = "/content-studio?tab=intelligence";
+    }
+  }, true);
+});
+</script>`;
+
 export async function GET(request) {
   const member = await getServerMember();
   if (!member) return new Response("Not authorized", { status: 403 });
   const source = await readFile(new URL("./portal.html", import.meta.url), "utf8");
   const openCampaign = new URL(request.url).searchParams.get("open") === "campaign";
-  const html = openCampaign ? source.replace("</body>", `${campaignLauncher}</body>`) : source;
+  const additions = `${portalReliability}${openCampaign ? campaignLauncher : ""}`;
+  const html = source.replace("</body>", `${additions}</body>`);
   return new Response(html, {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
