@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import "./portal.css";
 
 export const metadata = {
@@ -6,7 +7,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  return (
+  const document = (
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -15,4 +16,6 @@ export default function RootLayout({ children }) {
       <body>{children}</body>
     </html>
   );
+  if (process.env.NODE_ENV === "development") return document;
+  return <ClerkProvider proxyUrl="/__clerk" dynamic>{document}</ClerkProvider>;
 }

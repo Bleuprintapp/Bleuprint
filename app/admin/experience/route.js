@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { getServerMember } from "../../../lib/server-member";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -33,6 +34,8 @@ window.addEventListener("DOMContentLoaded", function () {
 </script>`;
 
 export async function GET(request) {
+  const member = await getServerMember();
+  if (!member) return new Response("Not authorized", { status: 403 });
   const source = await readFile(new URL("./portal.html", import.meta.url), "utf8");
   const openCampaign = new URL(request.url).searchParams.get("open") === "campaign";
   const html = openCampaign ? source.replace("</body>", `${campaignLauncher}</body>`) : source;

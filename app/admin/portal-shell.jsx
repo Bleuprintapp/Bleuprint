@@ -26,14 +26,34 @@ function readCalendarArchive() {
   } catch { return []; }
 }
 
-export default function PortalShell() {
+export default function PortalShell({ member }) {
   const frameRef = useRef(null);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [tab, setTab] = useState("archive");
   const [saved, setSaved] = useState([]);
+  const [workspaceReady, setWorkspaceReady] = useState(false);
   const refreshArchive = useCallback(() => setSaved([...readSavedArchive(), ...readCalendarArchive()]), []);
 
-  useEffect(() => { refreshArchive(); }, [refreshArchive]);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/workspace", { cache: "no-store" })
+      .then(response => response.ok ? response.json() : Promise.reject())
+      .then(({ state }) => {
+        if (!active) return;
+        if (Array.isArray(state?.archive)) window.localStorage.setItem(ARCHIVE_KEY, JSON.stringify(state.archive));
+        if (Array.isArray(state?.calendar)) window.localStorage.setItem("bleuprint.passport.calendar", JSON.stringify(state.calendar));
+      })
+      .catch(() => {})
+      .finally(() => { if (active) { refreshArchive(); setWorkspaceReady(true); } });
+    return () => { active = false; };
+  }, [refreshArchive]);
+
+  const saveShared = useCallback(() => {
+    const archive = readSavedArchive();
+    let calendar = [];
+    try { calendar = JSON.parse(window.localStorage.getItem("bleuprint.passport.calendar") || "[]"); } catch {}
+    fetch("/api/workspace", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ state: { archive, calendar } }) }).catch(() => {});
+  }, []);
 
   const captureApproval = useCallback(() => {
     const frame = frameRef.current;
@@ -53,18 +73,18 @@ export default function PortalShell() {
   const connectFrame = useCallback(() => {
     const document = frameRef.current?.contentDocument;
     if (!document) return;
-    document.addEventListener("click", () => window.setTimeout(() => { captureApproval(); refreshArchive(); }, 500));
-  }, [captureApproval, refreshArchive]);
+    document.addEventListener("click", () => window.setTimeout(() => { captureApproval(); refreshArchive(); saveShared(); }, 650));
+  }, [captureApproval, refreshArchive, saveShared]);
 
   const archived = [...saved, ...BASE_ARCHIVE].filter((item, index, all) => all.findIndex(candidate => candidate.id === item.id) === index);
   const changes = archived.filter(item => item.change).map(item => item.change);
 
   return <main className="portal-experience-shell">
-    <nav className="portal-quick-actions" aria-label="Portal shortcuts">
+    <nav className="portal-quick-actions" aria-label={`Portal shortcuts for ${member?.name || "member"}`}>
       <button onClick={() => { refreshArchive(); setArchiveOpen(true); }}><span>↘</span>Archive</button>
       <a href="/admin/experience?open=campaign" target="bleuprint-portal"><span>+</span>Campaign generator</a>
     </nav>
-    <iframe ref={frameRef} onLoad={connectFrame} className="portal-experience-frame" src="/admin/experience" name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write" />
+    {workspaceReady ? <iframe ref={frameRef} onLoad={connectFrame} className="portal-experience-frame" src="/admin/experience" name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write" /> : null}
     {archiveOpen ? <div className="portal-archive-layer" onClick={() => setArchiveOpen(false)}>
       <section className="portal-archive" onClick={event => event.stopPropagation()}>
         <header><div><small>PASSPORT / RECORD</small><h1>Archive</h1><p>Approved and completed work stays connected to the document and exact place it came from.</p></div><button onClick={() => setArchiveOpen(false)} aria-label="Close archive">×</button></header>
