@@ -18,5 +18,5 @@ export default function RootLayout({ children }) {
   );
 
   if (process.env.NODE_ENV === "development") return document;
-  return <ClerkProvider>{document}</ClerkProvider>;
+  return <ClerkProvider proxyUrl="/__clerk" dynamic>{document}</ClerkProvider>;
 }
