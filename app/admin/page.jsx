@@ -1,6 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import OperatingSystem from "./operating-system";
 
 export const dynamic = "force-dynamic";
 
@@ -9,10 +8,19 @@ function emailFor(user) {
 }
 
 export default async function AdminPortal() {
-  if (process.env.NODE_ENV === "development") {
-    return <OperatingSystem firstName="Kalena" />;
+  if (process.env.NODE_ENV !== "development") {
+    const user = await currentUser();
+    if (emailFor(user) !== "kalenagardner07@gmail.com") redirect("/portal");
   }
-  const user = await currentUser();
-  if (emailFor(user) !== "kalenagardner07@gmail.com") redirect("/portal");
-  return <OperatingSystem firstName={user?.firstName || "Kalena"} />;
+
+  return (
+    <main className="portal-experience-shell">
+      <iframe
+        className="portal-experience-frame"
+        src="/admin/experience"
+        title="Bleuprint Intelligence Portal — Passport"
+        allow="clipboard-write"
+      />
+    </main>
+  );
 }
