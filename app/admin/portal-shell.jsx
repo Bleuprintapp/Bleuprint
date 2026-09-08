@@ -81,6 +81,7 @@ export default function PortalShell({ member }) {
 
   return <main className="portal-experience-shell">
     <nav className="portal-quick-actions" aria-label={`Portal shortcuts for ${member?.name || "member"}`}>
+      <a href="/account"><span>○</span>{member?.name || "Account"}</a>
       <button onClick={() => { refreshArchive(); setArchiveOpen(true); }}><span>↘</span>Archive</button>
       <a href="/admin/experience?open=campaign" target="bleuprint-portal"><span>+</span>Campaign generator</a>
     </nav>

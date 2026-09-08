@@ -1,17 +1,13 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-const isProtectedRoute = createRouteMatcher(["/portal(.*)", "/admin(.*)", "/api/workspace(.*)", "/api/sync(.*)"]);
-
-const protectPrivateRoutes = clerkMiddleware(
-  async (auth, request) => {
-    if (isProtectedRoute(request)) {
-      await auth.protect({ unauthenticatedUrl: new URL("/sign-in", request.url).toString() });
-    }
-  },
-  { frontendApiProxy: { enabled: true } }
-);
-
-export default process.env.NODE_ENV === "development" ? function localPreview() {} : protectPrivateRoutes;
+export default function protectPrivateRoutes(request) {
+  const path = request.nextUrl.pathname;
+  const isPrivate = path.startsWith("/admin") || path.startsWith("/portal");
+  if (isPrivate && !request.cookies.get("bleuprint_session")?.value) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
