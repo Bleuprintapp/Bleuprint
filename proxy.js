@@ -4,7 +4,7 @@ const isProtectedRoute = createRouteMatcher(["/portal(.*)", "/admin(.*)"]);
 
 const protectPrivateRoutes = clerkMiddleware(async (auth, request) => {
   if (isProtectedRoute(request)) {
-    await auth.protect({ unauthenticatedUrl: "/sign-in" });
+    await auth.protect({ unauthenticatedUrl: new URL("/sign-in", request.url).toString() });
   }
 });
 
