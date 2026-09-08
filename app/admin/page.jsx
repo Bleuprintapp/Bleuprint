@@ -15,9 +15,18 @@ export default async function AdminPortal() {
 
   return (
     <main className="portal-experience-shell">
+      <a
+        className="portal-campaign-shortcut"
+        href="/admin/experience?open=campaign"
+        target="bleuprint-portal"
+      >
+        <span>+</span>
+        Campaign generator
+      </a>
       <iframe
         className="portal-experience-frame"
         src="/admin/experience"
+        name="bleuprint-portal"
         title="Bleuprint Intelligence Portal — Passport"
         allow="clipboard-write"
       />
