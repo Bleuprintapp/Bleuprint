@@ -6,6 +6,8 @@ export const runtime = "nodejs";
 
 const campaignLauncher = `<script>
 window.addEventListener("DOMContentLoaded", function () {
+  function removeAsk() { Array.from(document.querySelectorAll("button")).filter(function (button) { return button.textContent.includes("Ask Bleuprint"); }).forEach(function (button) { button.style.display = "none"; }); }
+  removeAsk(); new MutationObserver(removeAsk).observe(document.body, { childList: true, subtree: true });
   function button(text) {
     return Array.from(document.querySelectorAll("button")).find(function (item) {
       return item.textContent.trim() === text || item.textContent.includes(text);
@@ -43,9 +45,7 @@ window.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("click", function (event) {
     var button = event.target.closest && event.target.closest("button");
     if (!button) return;
-    if (button.textContent.includes("Ask Bleuprint")) {
-      event.preventDefault(); event.stopImmediatePropagation(); window.top.location.href = "/content-studio?tab=intelligence";
-    }
+    if ((button.getAttribute("title") || "").startsWith("Back to")) { event.preventDefault(); event.stopImmediatePropagation(); window.location.reload(); }
   }, true);
 });
 </script>`;
