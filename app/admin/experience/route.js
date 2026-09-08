@@ -1,14 +1,7 @@
-import { currentUser } from "@clerk/nextjs/server";
 import { readFile } from "node:fs/promises";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-function primaryEmail(user) {
-  return user?.emailAddresses
-    .find((email) => email.id === user.primaryEmailAddressId)
-    ?.emailAddress?.toLowerCase() || "";
-}
 
 const campaignLauncher = `<script>
 window.addEventListener("DOMContentLoaded", function () {
@@ -40,13 +33,6 @@ window.addEventListener("DOMContentLoaded", function () {
 </script>`;
 
 export async function GET(request) {
-  if (process.env.NODE_ENV !== "development") {
-    const user = await currentUser();
-    if (primaryEmail(user) !== "kalenagardner07@gmail.com") {
-      return new Response("Not found", { status: 404 });
-    }
-  }
-
   const source = await readFile(new URL("./portal.html", import.meta.url), "utf8");
   const openCampaign = new URL(request.url).searchParams.get("open") === "campaign";
   const html = openCampaign ? source.replace("</body>", `${campaignLauncher}</body>`) : source;
