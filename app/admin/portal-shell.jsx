@@ -1,15 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ContentPanel, MemoryPanel, RoadmapPanel, WorkspaceModal } from "./workspace-panels";
 
 const ARCHIVE_KEY = "bleuprint.passport.archive";
-const BASE_ARCHIVE = [
-  { id: "b4", type: "Position", title: "The model proposes. Passport decides.", status: "Approved", document: "Passport Brand Guide v1.0", location: "§2.1 · Positioning", approvedBy: "Kalena" },
-  { id: "b5", type: "Rule", title: "Claims we never make", status: "Approved", document: "Passport Brand Guide v1.0", location: "§2.2 and §6.2 · Claim boundaries", approvedBy: "Kalena" },
-  { id: "b6", type: "Rule", title: "The proof ladder", status: "Approved", document: "Passport Brand Guide v1.0", location: "§6.3 · Evidence labels", approvedBy: "Kalena" },
-  { id: "a1", type: "Audience", title: "Teams deploying agents into sensitive workflows", status: "Approved", document: "Passport Brand Guide v1.0", location: "§2.1 · Primary audience", approvedBy: "Kalena" },
-  { id: "a3", type: "Rule", title: "Stealth boundary", status: "Approved", document: "Passport Brand Guide v1.0", location: "§9.0 · Public disclosure", approvedBy: "Kalena + Paris" },
-];
+const BASE_ARCHIVE = [];
 
 function readSavedArchive() {
   try { return JSON.parse(window.localStorage.getItem(ARCHIVE_KEY) || "[]"); } catch { return []; }
@@ -28,26 +23,78 @@ function readCalendarArchive() {
 
 export default function PortalShell({ member }) {
   const frameRef = useRef(null);
-  const [frameSource, setFrameSource] = useState("/admin/experience");
+  const [panel, setPanel] = useState(null);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [tab, setTab] = useState("archive");
   const [saved, setSaved] = useState([]);
+  const [sources, setSources] = useState([]), [mismatches, setMismatches] = useState([]);
+  const [calendar, setCalendar] = useState([]), [campaigns, setCampaigns] = useState([]);
+  const [roadmap, setRoadmap] = useState(null), [analysis, setAnalysis] = useState(null);
+  const [status, setStatus] = useState("Shared with Kalena + Paris");
   const [workspaceReady, setWorkspaceReady] = useState(false);
   const refreshArchive = useCallback(() => setSaved([...readSavedArchive(), ...readCalendarArchive()]), []);
 
   useEffect(() => {
     let active = true;
-    fetch("/api/workspace", { cache: "no-store" })
-      .then(response => response.ok ? response.json() : Promise.reject())
-      .then(({ state }) => {
+    Promise.all([fetch("/api/workspace", { cache: "no-store" }), fetch("/api/sources", { cache:"no-store" }), fetch("/api/roadmap", { cache:"no-store" })])
+      .then(async responses => Promise.all(responses.map(response => response.ok ? response.json() : Promise.reject())))
+      .then(([{ state }, sourceData, roadmapData]) => {
         if (!active) return;
         if (Array.isArray(state?.archive)) window.localStorage.setItem(ARCHIVE_KEY, JSON.stringify(state.archive));
         if (Array.isArray(state?.calendar)) window.localStorage.setItem("bleuprint.passport.calendar", JSON.stringify(state.calendar));
+        setCalendar(state?.calendar || []); setCampaigns(state?.campaigns || []);
+        setSources(sourceData.documents || []); setMismatches(sourceData.mismatches || []); setRoadmap(roadmapData);
+        fetch("/api/analyze", { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({ calendar:state?.calendar || [], campaigns:state?.campaigns || [] }) }).then(response=>response.ok?response.json():null).then(data=>{if(active&&data)setAnalysis(data);}).catch(()=>{});
       })
       .catch(() => {})
       .finally(() => { if (active) { refreshArchive(); setWorkspaceReady(true); } });
     return () => { active = false; };
   }, [refreshArchive]);
+
+  const saveContent = useCallback(async (nextCalendar, nextCampaigns) => {
+    setCalendar(nextCalendar); setCampaigns(nextCampaigns); setStatus("Saving shared workspace…");
+    window.localStorage.setItem("bleuprint.passport.calendar", JSON.stringify(nextCalendar));
+    const newlyApproved = nextCalendar.filter(row => /approved|published|done/i.test(row.status || ""));
+    const current = readSavedArchive();
+    const additions = newlyApproved.filter(row => !current.some(item => item.id === `calendar-${row.id}`)).map(row => ({ id:`calendar-${row.id}`, type:`${row.channel} · ${row.format}`, title:row.title, status:row.status, document:"Shared content calendar", location:`${row.date || row.day} · ${row.time}`, approvedBy:member.name, at:new Date().toLocaleString() }));
+    const at = new Date().toLocaleString([], { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
+    const fields = ["status","title","date","day","time","format","channel"];
+    const rowChanges = nextCalendar.flatMap(row => {
+      const previous = calendar.find(item => item.id === row.id); if (!previous) return [];
+      return fields.filter(field => String(previous[field] || "") !== String(row[field] || "")).map(field => ({
+        id:`change-${row.id}-${field}-${Date.now()}`, type:"Update", title:`${row.title} · ${field} updated`, status:"Recorded",
+        document:row.sourceDocument || "Shared content calendar", location:`${row.date || row.day} · ${row.channel} · ${field}`, approvedBy:member.name, at,
+        change:{ document:row.sourceDocument || "Shared content calendar", location:`${row.date || row.day} · ${row.channel} · ${field}`, previous:String(previous[field] || "Not set"), current:String(row[field] || "Not set"), by:member.name, at }
+      }));
+    });
+    const campaignChanges = nextCampaigns.flatMap(item => {
+      const previous = campaigns.find(candidate => candidate.id === item.id);
+      if (previous && JSON.stringify(previous) === JSON.stringify(item)) return [];
+      const platforms = Object.keys(item.outputs || {}).join(", ") || "No platform output";
+      return [{ id:`change-${item.id}-${Date.now()}`, type:"Update", title:`${item.title} · campaign ${previous ? "updated" : "created"}`, status:"Recorded", document:"Shared campaign record", location:`Campaign · ${item.title} · ${platforms}`, approvedBy:member.name, at, change:{ document:"Shared campaign record", location:`Campaign · ${item.title} · ${platforms}`, previous:previous ? `${previous.status || "Draft"} · ${Object.keys(previous.outputs || {}).join(", ")}` : "No shared campaign record", current:`${item.status || "Draft"} · ${platforms}`, by:member.name, at } }];
+    });
+    const archive = [...campaignChanges, ...rowChanges, ...additions, ...current]; window.localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archive)); setSaved([...archive,...readCalendarArchive()]);
+    const response = await fetch("/api/workspace", { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({state:{calendar:nextCalendar,campaigns:nextCampaigns,archive}}) });
+    setStatus(response.ok ? `Saved by ${member.name} · just now` : "Could not save shared changes");
+  }, [calendar, campaigns, member.name]);
+
+  useEffect(() => {
+    function receivePortalMessage(event) {
+      if (event.origin !== window.location.origin || event.source !== frameRef.current?.contentWindow) return;
+      if (event.data?.type === "bleuprint:open-panel" && ["memory","roadmap","content"].includes(event.data.panel)) setPanel(event.data.panel);
+      if (event.data?.type === "bleuprint:state-changed" && event.data.key === "bleuprint.passport.calendar") {
+        try { const rows=JSON.parse(event.data.value); if(Array.isArray(rows)) saveContent(rows,campaigns); } catch {}
+      }
+    }
+    window.addEventListener("message", receivePortalMessage);
+    return () => window.removeEventListener("message", receivePortalMessage);
+  }, [campaigns, saveContent]);
+
+  const refreshSources = useCallback(async () => { const response=await fetch("/api/sources",{cache:"no-store"}); if(response.ok){const data=await response.json();setSources(data.documents||[]);setMismatches(data.mismatches||[]);} },[]);
+  const uploadSource = useCallback(async file => { setStatus(`Reading ${file.name}…`); const body=new FormData();body.append("file",file);const response=await fetch("/api/sources",{method:"POST",body});const data=await response.json();if(!response.ok){setStatus(data.error||"Upload failed");return null;}setSources(data.documents||[]);setMismatches(data.mismatches||[]);const workspace=await fetch("/api/workspace",{cache:"no-store"}).then(r=>r.json());if(Array.isArray(workspace.state?.calendar)){setCalendar(workspace.state.calendar);window.localStorage.setItem("bleuprint.passport.calendar",JSON.stringify(workspace.state.calendar));}setStatus(`${file.name} added to Passport memory`);return (data.documents||[]).find(item=>item.name===file.name)||null; },[]);
+  const updateSource = useCallback(async (id, changes) => { setStatus("Updating shared memory…"); const response=await fetch("/api/sources",{method:"PATCH",headers:{"content-type":"application/json"},body:JSON.stringify({id,...changes})});const data=await response.json();if(response.ok){setSources(data.documents||[]);setMismatches(data.mismatches||[]);setStatus("Memory updated for Kalena + Paris");}else setStatus(data.error||"Memory update failed"); },[]);
+  const saveRoadmap = useCallback(async next => { setRoadmap(current=>({...current,state:next}));setStatus("Saving roadmap…");const response=await fetch("/api/roadmap",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(next)});setStatus(response.ok?`Roadmap updated by ${member.name}`:"Roadmap could not save"); },[member.name]);
+  const runAnalysis = useCallback(async (nextCalendar=calendar,nextCampaigns=campaigns) => { setStatus("Checking Passport alignment…");const response=await fetch("/api/analyze",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({calendar:nextCalendar,campaigns:nextCampaigns})});const data=await response.json();setAnalysis(data);setStatus(response.ok?"Alignment check complete":"Alignment check failed");return data; },[calendar,campaigns]);
 
   const saveShared = useCallback(() => {
     const archive = readSavedArchive();
@@ -75,20 +122,23 @@ export default function PortalShell({ member }) {
     const document = frameRef.current?.contentDocument;
     if (!document) return;
     document.addEventListener("click", () => window.setTimeout(() => { captureApproval(); refreshArchive(); saveShared(); }, 650));
-  }, [captureApproval, refreshArchive, saveShared]);
+    window.setTimeout(() => { try { const rows=JSON.parse(window.localStorage.getItem("bleuprint.passport.calendar")||"[]"); if(rows.length&&!calendar.length) saveContent(rows,campaigns); } catch {} },1200);
+  }, [captureApproval, refreshArchive, saveShared, calendar.length, campaigns, saveContent]);
 
-  const archived = [...saved, ...BASE_ARCHIVE].filter((item, index, all) => all.findIndex(candidate => candidate.id === item.id) === index);
-  const changes = archived.filter(item => item.change).map(item => item.change);
+  const archived = [...saved.filter(item => item.type !== "Update"), ...BASE_ARCHIVE].filter((item, index, all) => all.findIndex(candidate => candidate.id === item.id) === index);
+  const changes = saved.filter(item => item.change).map(item => item.change);
 
   return <main className="portal-experience-shell">
-    <nav className="portal-quick-actions" aria-label={`Portal shortcuts for ${member?.name || "member"}`}>
-      <a href="/account"><span>○</span>{member?.name || "Account"}</a>
-      <button onClick={() => { refreshArchive(); setArchiveOpen(true); }}><span>↘</span>Archive</button>
-      <a href="/hq/passport/roadmap.html" target="_blank" rel="noreferrer"><span>35</span>Roadmap</a>
-      <a href="/hq/passport/week-one.html" target="_blank" rel="noreferrer"><span>11</span>Week one plan</a>
-      <button className="portal-primary-action" onClick={() => setFrameSource(`/admin/experience?open=campaign&t=${Date.now()}`)}><span>+</span>Campaign generator</button>
+    <nav className="portal-system-actions" aria-label="Passport workspaces">
+      <button onClick={() => setPanel("memory")}><span>◎</span>Memory<small>{sources.length}</small></button>
+      <button onClick={() => setPanel("roadmap")}><span>↗</span>Roadmap<small>{roadmap?.phases?.flatMap(item=>item.tasks).filter(item=>!roadmap.state?.done?.[item.id]).length || 0}</small></button>
+      <button onClick={() => setPanel("content")}><span>+</span>Content<small>{analysis?.summary?.high ? `${analysis.summary.high}!` : calendar.length}</small></button>
     </nav>
-    {workspaceReady ? <iframe ref={frameRef} onLoad={connectFrame} className="portal-experience-frame" src={frameSource} name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write" /> : null}
+    <nav className="portal-account-actions"><a href="/account">{member?.name || "Account"}</a><button onClick={() => { refreshArchive(); setArchiveOpen(true); }}>Archive</button></nav>
+    {workspaceReady ? <iframe ref={frameRef} onLoad={connectFrame} className="portal-experience-frame" src="/admin/experience" name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write" /> : null}
+    {panel === "memory" ? <WorkspaceModal title="Live memory" kicker="PASSPORT / SOURCES" close={() => setPanel(null)} wide><MemoryPanel sources={sources} mismatches={mismatches} onUpload={uploadSource} onRefresh={refreshSources} onUpdate={updateSource} status={status}/></WorkspaceModal> : null}
+    {panel === "roadmap" ? <WorkspaceModal title="Build roadmap" kicker="PASSPORT / OPERATING ORDER" close={() => setPanel(null)} wide actions={<a className="original-link" href="/hq/passport/roadmap.html" target="_blank" rel="noreferrer">Original roadmap ↗</a>}><RoadmapPanel roadmap={roadmap} onSave={saveRoadmap} onUpload={uploadSource} onOpenContent={() => setPanel("content")} member={member}/></WorkspaceModal> : null}
+    {panel === "content" ? <WorkspaceModal title="Content" kicker="PASSPORT / CURRENT WEEK" close={() => setPanel(null)} wide actions={<a className="original-link" href="/hq/passport/week-one.html" target="_blank" rel="noreferrer">Original Week One ↗</a>}><ContentPanel calendar={calendar} campaigns={campaigns} onSave={saveContent} onUpload={uploadSource} onAnalyze={runAnalysis} analysis={analysis} status={status}/></WorkspaceModal> : null}
     {archiveOpen ? <div className="portal-archive-layer" onClick={() => setArchiveOpen(false)}>
       <section className="portal-archive" onClick={event => event.stopPropagation()}>
         <header><div><small>PASSPORT / RECORD</small><h1>Archive</h1><p>Approved and completed work stays connected to the document and exact place it came from.</p></div><button onClick={() => setArchiveOpen(false)} aria-label="Close archive">×</button></header>
