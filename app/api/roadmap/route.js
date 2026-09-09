@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { NextResponse } from "next/server";
 import { getServerMember } from "../../../lib/server-member";
 import { ensureSchema, getSql } from "../../../lib/db";
+import { createMentionNotifications } from "../../../lib/passport-memory";
 
 const WORKSPACE = "passport";
 const decode = value => String(value || "").replace(/\\"/g, '"').replace(/\\n/g, "\n");
@@ -37,5 +38,6 @@ export async function POST(request) {
   const sql = getSql();
   await sql`INSERT INTO bleuprint_workspace_state (workspace_id, state_key, state_value, updated_by) VALUES (${WORKSPACE}, 'roadmap', ${JSON.stringify(state)}::jsonb, ${member.email}) ON CONFLICT (workspace_id, state_key) DO UPDATE SET state_value = EXCLUDED.state_value, updated_at = NOW(), updated_by = EXCLUDED.updated_by`;
   await sql`INSERT INTO bleuprint_audit_events (workspace_id, actor_email, event_type, source_name, detail) VALUES (${WORKSPACE}, ${member.email}, 'roadmap.updated', 'Passport Build Roadmap', ${JSON.stringify({ completed: Object.values(state.done || {}).filter(Boolean).length, blocked: Object.keys(state.blocked || {}).length })}::jsonb)`;
+  await createMentionNotifications(sql,{actor:member.email,text:JSON.stringify(state.questions||{}),title:`${member.name} mentioned you in the roadmap`,body:"A roadmap question or bottleneck needs your attention.",link:"/admin?open=roadmap"});
   return NextResponse.json({ ok: true, updatedBy: member.email });
 }

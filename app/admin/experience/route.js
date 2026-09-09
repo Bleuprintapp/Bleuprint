@@ -78,6 +78,8 @@ window.addEventListener("DOMContentLoaded", function () {
     if (labels.includes("Live memory") || labels.includes("Memory")) panel = "memory";
     else if (labels.includes("Roadmap") || labels.includes("Build map")) panel = "roadmap";
     else if (labels.includes("Content")) panel = "content";
+    else if (labels.includes("Performance") || labels.includes("Signals") || labels.includes("Attention")) panel = "performance";
+    else if (labels.includes("Compare") || labels.includes("Issues")) panel = "issues";
     if (!panel) return;
     event.preventDefault(); event.stopImmediatePropagation();
     window.parent.postMessage({ type: "bleuprint:open-panel", panel: panel }, window.location.origin);

@@ -1,22 +1,16 @@
 import { put } from "@vercel/blob";
 import { randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
 import { NextResponse } from "next/server";
 import { getServerMember } from "../../../lib/server-member";
 import { ensureSchema, getSql } from "../../../lib/db";
 import { calendarRowsFromUpload, SOURCE_ASSUMPTION_POLICY } from "../../../lib/passport-content";
+import { extractMemoryEntries } from "../../../lib/passport-memory";
 
 export const runtime = "nodejs";
 const WORKSPACE = "passport";
 const readable = new Set(["text/plain","text/html","text/markdown","text/csv","application/json"]);
-const rows = sql => sql`SELECT id, name, pathname, content_type, size_bytes, extraction_state, document_type, destination, context, is_record, uploaded_by, uploaded_at FROM bleuprint_documents WHERE workspace_id = ${WORKSPACE} ORDER BY uploaded_at DESC`;
+const rows = sql => sql`SELECT id, name, pathname, content_type, size_bytes, extraction_state, document_type, destination, context, is_record, uploaded_by, uploaded_at FROM bleuprint_documents WHERE workspace_id = ${WORKSPACE} AND archived_at IS NULL ORDER BY uploaded_at DESC`;
 const mismatchRows = sql => sql`SELECT m.id, m.document_id, m.mismatch_type, m.detail, m.source_location, m.status, m.created_at, d.name AS document_name, r.name AS record_name FROM bleuprint_mismatches m JOIN bleuprint_documents d ON d.id = m.document_id LEFT JOIN bleuprint_documents r ON r.id = m.record_document_id WHERE m.workspace_id = ${WORKSPACE} AND m.status = 'open' ORDER BY m.created_at DESC`;
-const bundledSources = [
-  { name: "brand-guide.html", type: "brand foundation", destination: "Brand memory", record: true },
-  { name: "roadmap.html", type: "roadmap", destination: "Planning", record: true },
-  { name: "week-one.html", type: "content plan", destination: "Content system", record: true },
-  { name: "index.html", type: "reference", destination: "Passport index", record: false },
-];
 function classify(name, text = "") {
   const filename = name.toLowerCase();
   const sample = `${name} ${text.slice(0, 20000)}`.toLowerCase();
@@ -37,26 +31,6 @@ function classify(name, text = "") {
 function deriveContext(text = "") {
   const headings = [...text.matchAll(/(?:^|[.!?]\s+)([A-Z][A-Za-z0-9 &/—-]{3,70})(?=[:\n])/gm)].slice(0,12).map(x=>x[1]);
   return { summary: text.slice(0, 700), dates: [...new Set(text.match(/\b(?:20\d{2}-\d{2}-\d{2}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2})\b/gi) || [])].slice(0,20), colors: [...new Set(text.match(/#[0-9a-f]{6}\b/gi) || [])], headings, assumption_policy: SOURCE_ASSUMPTION_POLICY };
-}
-
-async function ensureBundledSources(sql) {
-  for (const source of bundledSources) {
-    const raw = await readFile(new URL(`../../../public/hq/passport/${source.name}`, import.meta.url), "utf8");
-    const visible = raw.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&nbsp;|&#160;/gi, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
-    const calendar = source.name === "week-one.html" ? calendarRowsFromUpload({ name: source.name, contentType: "text/html", rawText: raw }) : [];
-    const extracted = source.name === "roadmap.html" ? raw.slice(0, 500000) : [visible, calendar.map(row => [row.date, row.channel, row.title, row.productionFormat || row.format, row.brief, row.screen, row.copy?.a, row.copy?.b].filter(Boolean).join(" · ")).join("\n")].filter(Boolean).join("\n").slice(0, 500000);
-    const summary = source.name === "roadmap.html"
-      ? "Passport Build Roadmap. Thirty-five tasks across five ordered phases with owners, timing, dependencies, and flagged decisions."
-      : source.name === "week-one.html"
-        ? `Passport Week One content plan. ${calendar.length} scheduled expressions across LinkedIn, Instagram, and TikTok, with briefs, proof labels, source assets, and approved copy variants.`
-        : visible.slice(0, 700);
-    const context = { ...deriveContext(extracted), summary, source: "Published Passport file already included with this portal", assumption_policy: SOURCE_ASSUMPTION_POLICY };
-    await sql`
-      INSERT INTO bleuprint_documents (workspace_id, name, pathname, content_type, size_bytes, extracted_text, extraction_state, document_type, destination, context, is_record, uploaded_by)
-      VALUES (${WORKSPACE}, ${source.name}, ${`db://passport/bundled/${source.name}`}, 'text/html', ${Buffer.byteLength(raw)}, ${extracted}, 'connected from published Passport source', ${source.type}, ${source.destination}, ${JSON.stringify(context)}::jsonb, ${source.record}, 'Passport source')
-      ON CONFLICT (pathname) DO NOTHING
-    `;
-  }
 }
 
 async function seedCalendarIfEmpty(sql, calendar, member, sourceName, pathname) {
@@ -82,7 +56,7 @@ async function seedCalendarIfEmpty(sql, calendar, member, sourceName, pathname) 
 
 export async function GET() {
   const member = await getServerMember(); if (!member) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  await ensureSchema(); const sql = getSql(); await ensureBundledSources(sql); return NextResponse.json({ documents: await rows(sql), mismatches: await mismatchRows(sql) });
+  await ensureSchema(); const sql = getSql(); return NextResponse.json({ documents: await rows(sql), mismatches: await mismatchRows(sql) });
 }
 
 export async function POST(request) {
@@ -118,8 +92,15 @@ export async function POST(request) {
     if (changedColors.length) await sql`INSERT INTO bleuprint_mismatches (workspace_id, document_id, record_document_id, mismatch_type, detail, source_location) VALUES (${WORKSPACE}, ${documentId}, ${record.id}, 'explicit_value_change', ${`Color values differ from ${record.name}: ${changedColors.join(', ')}`}, 'Extracted color values')`;
   }
   const calendarImport = await seedCalendarIfEmpty(sql, calendar, member, file.name, pathname);
+  const extractedEntries = canIndex ? extractMemoryEntries({ name: file.name, contentType: file.type, rawText }) : [];
+  for (const entry of extractedEntries) {
+    await sql`
+      INSERT INTO bleuprint_memory_entries (workspace_id, area, entry_type, status, title, body, source_document_id, source_name, source_location, evidence, created_by, updated_by)
+      VALUES (${WORKSPACE}, ${entry.area}, ${entry.entryType}, 'extracted', ${entry.title}, ${entry.body}, ${documentId}, ${file.name}, ${entry.sourceLocation}, ${entry.evidence}, ${member.email}, ${member.email})
+    `;
+  }
   await sql`INSERT INTO bleuprint_audit_events (workspace_id, actor_email, event_type, source_name, source_location, detail) VALUES (${WORKSPACE}, ${member.email}, 'source.uploaded', ${file.name}, ${pathname}, ${JSON.stringify({ size: file.size, extraction: state, storage, storageDetail, calendarImport })}::jsonb)`;
-  return NextResponse.json({ documents: await rows(sql), mismatches: await mismatchRows(sql), calendarImport, storage });
+  return NextResponse.json({ documents: await rows(sql), mismatches: await mismatchRows(sql), calendarImport, storage, extractedEntries: extractedEntries.length });
 }
 
 export async function PATCH(request) {
@@ -147,9 +128,25 @@ export async function PATCH(request) {
   if (shouldMarkRecord) {
     await sql`UPDATE bleuprint_documents SET is_record = FALSE WHERE workspace_id = ${WORKSPACE} AND document_type = ${nextDocumentType}`;
     await sql`UPDATE bleuprint_documents SET is_record = TRUE WHERE id = ${id}`;
+    await sql`UPDATE bleuprint_memory_entries SET status = 'extracted', updated_at = NOW(), updated_by = ${member.email} WHERE workspace_id = ${WORKSPACE} AND source_document_id <> ${id} AND area = ANY(SELECT area FROM bleuprint_memory_entries WHERE source_document_id = ${id}) AND status = 'confirmed'`;
+    await sql`UPDATE bleuprint_memory_entries SET status = 'confirmed', updated_at = NOW(), updated_by = ${member.email} WHERE workspace_id = ${WORKSPACE} AND source_document_id = ${id} AND archived_at IS NULL`;
     await sql`UPDATE bleuprint_mismatches SET status = 'resolved' WHERE document_id = ${id} AND mismatch_type = 'authority_unset'`;
   }
   const eventType = shouldMarkRecord ? 'source.marked_record' : 'source.updated';
   await sql`INSERT INTO bleuprint_audit_events (workspace_id, actor_email, event_type, source_name, detail) VALUES (${WORKSPACE}, ${member.email}, ${eventType}, ${doc.name}, ${JSON.stringify({ id, summaryChanged: summary !== undefined, destination: nextDestination, documentType: nextDocumentType, isRecord: shouldMarkRecord || doc.is_record })}::jsonb)`;
+  return NextResponse.json({ documents: await rows(sql), mismatches: await mismatchRows(sql) });
+}
+
+export async function DELETE(request) {
+  const member = await getServerMember(); if (!member) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const id = new URL(request.url).searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "Source id is required" }, { status: 400 });
+  await ensureSchema(); const sql = getSql();
+  const docs = await sql`SELECT id, name FROM bleuprint_documents WHERE id = ${id} AND workspace_id = ${WORKSPACE} AND archived_at IS NULL LIMIT 1`;
+  if (!docs.length) return NextResponse.json({ error: "Source not found" }, { status: 404 });
+  await sql`UPDATE bleuprint_documents SET archived_at = NOW(), archived_by = ${member.email}, is_record = FALSE WHERE id = ${id}`;
+  await sql`UPDATE bleuprint_memory_entries SET archived_at = NOW(), archived_by = ${member.email}, updated_at = NOW(), updated_by = ${member.email} WHERE source_document_id = ${id} AND archived_at IS NULL`;
+  await sql`UPDATE bleuprint_mismatches SET status = 'archived' WHERE document_id = ${id} AND status = 'open'`;
+  await sql`INSERT INTO bleuprint_audit_events (workspace_id, actor_email, event_type, source_name, detail) VALUES (${WORKSPACE}, ${member.email}, 'source.archived', ${docs[0].name}, ${JSON.stringify({ id })}::jsonb)`;
   return NextResponse.json({ documents: await rows(sql), mismatches: await mismatchRows(sql) });
 }

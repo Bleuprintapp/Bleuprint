@@ -258,8 +258,8 @@ export async function POST(request) {
   const sql = getSql();
   const [workspaceRows, documents, mismatches] = await Promise.all([
     sql`SELECT state_key, state_value FROM bleuprint_workspace_state WHERE workspace_id = ${WORKSPACE} AND state_key IN ('calendar', 'campaigns')`,
-    sql`SELECT id, name, document_type, destination, context, is_record, extraction_state, uploaded_at FROM bleuprint_documents WHERE workspace_id = ${WORKSPACE} ORDER BY uploaded_at DESC`,
-    sql`SELECT m.id, m.document_id, m.record_document_id, m.mismatch_type, m.detail, m.source_location, m.status, m.created_at, d.name AS document_name, r.name AS record_name FROM bleuprint_mismatches m JOIN bleuprint_documents d ON d.id = m.document_id LEFT JOIN bleuprint_documents r ON r.id = m.record_document_id WHERE m.workspace_id = ${WORKSPACE} AND m.status = 'open' ORDER BY m.created_at DESC`,
+    sql`SELECT id, name, document_type, destination, context, is_record, extraction_state, uploaded_at FROM bleuprint_documents WHERE workspace_id = ${WORKSPACE} AND archived_at IS NULL ORDER BY uploaded_at DESC`,
+    sql`SELECT m.id, m.document_id, m.record_document_id, m.mismatch_type, m.detail, m.source_location, m.status, m.created_at, d.name AS document_name, r.name AS record_name FROM bleuprint_mismatches m LEFT JOIN bleuprint_documents d ON d.id = m.document_id LEFT JOIN bleuprint_documents r ON r.id = m.record_document_id WHERE m.workspace_id = ${WORKSPACE} AND m.status = 'open' ORDER BY m.created_at DESC`,
   ]);
   const shared = Object.fromEntries(workspaceRows.map(row => [row.state_key, row.state_value]));
   const sharedCalendar = asArray(shared.calendar);
@@ -529,6 +529,19 @@ export async function POST(request) {
   const findings = checks.length
     ? checks.map(check => `${check.title}: ${check.message}`)
     : ["No proof-label, source-placeholder, stealth-boundary, production, handoff, record, or source-mismatch issues were found in the current shared plan."];
+
+  for (const check of checks.filter(item => !String(item.id).startsWith("mismatch-"))) {
+    const fingerprint = `${check.code}|${check.affectedOutput}|${check.message}`;
+    const found = await sql`SELECT id, status FROM bleuprint_mismatches WHERE workspace_id=${WORKSPACE} AND impact->>'fingerprint'=${fingerprint} ORDER BY created_at DESC LIMIT 1`;
+    if (!found.length) {
+      const inserted = await sql`
+        INSERT INTO bleuprint_mismatches (workspace_id, mismatch_type, detail, source_location, impact)
+        VALUES (${WORKSPACE}, ${`alignment_${check.code}`}, ${check.message}, ${`${check.evidence.document} · ${check.evidence.location}`}, ${JSON.stringify({ fingerprint, title:check.title, severity:check.severity, affectedOutput:check.affectedOutput, recommendation:check.recommendation, requiresJudgment:check.requiresJudgment })}::jsonb)
+        RETURNING id
+      `;
+      check.issueId = inserted[0].id;
+    } else check.issueId = found[0].id;
+  }
 
   return NextResponse.json({
     title: `${checks.length} alignment finding${checks.length === 1 ? "" : "s"}`,
