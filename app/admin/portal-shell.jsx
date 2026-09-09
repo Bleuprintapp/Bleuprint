@@ -118,15 +118,17 @@ export default function PortalShell({ member }) {
 
   const openIssues=issues.filter(item=>["open","assigned"].includes(item.status));
   const unread=notifications.filter(item=>!item.read_at).length;
+  const archivedCount=(archive.documents?.length||0)+(archive.memory?.length||0)+(archive.issues?.length||0)+(archive.archivedContent?.length||0);
   const common={close:()=>setPanel(null),wide:true};
   return <main className="portal-experience-shell">
+    <p className="portal-record-notice">Blueprint map · use the workspaces below for shared updates, archive, and source-backed records.</p>
     <nav className="portal-system-actions" aria-label="Passport workspaces">
       <button onClick={()=>setPanel("memory")}><span>◎</span>Memory<small>{memory.length}</small></button>
       <button onClick={()=>setPanel("roadmap")}><span>↗</span>Roadmap<small>{roadmap?.phases?.flatMap(item=>item.tasks).filter(item=>!roadmap.state?.done?.[item.id]&&!roadmap.state?.archived?.[item.id]).length||0}</small></button>
       <button onClick={()=>setPanel("content")}><span>+</span>Content<small>{calendar.filter(row=>row.status!=="Archived").length}</small></button>
       <button onClick={()=>setPanel("issues")}><span>!</span>Signals<small>{openIssues.length}</small></button>
       <button onClick={()=>setPanel("performance")}><span>↟</span>Performance<small>{performance.metrics?.length||0}</small></button>
-      <button onClick={()=>setPanel("archive")}><span>⌁</span>Archive<small>{archive.content?.length||0}</small></button>
+      <button onClick={()=>setPanel("archive")}><span>⌁</span>Archive<small>{archivedCount}</small></button>
     </nav>
     <nav className="portal-account-actions"><button className={unread?"has-alert":""} onClick={()=>{setPanel("issues");readNotifications();}}>Updates{unread?<b>{unread}</b>:null}</button><a href="/account">{member.name}</a></nav>
     {ready?<iframe ref={frameRef} className="portal-experience-frame" src="/admin/experience" name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write"/>:null}

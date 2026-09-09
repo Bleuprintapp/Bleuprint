@@ -64,17 +64,6 @@ window.addEventListener("DOMContentLoaded", function () {
       var orientation = Array.from(center.children).find(function (element) { var text = norm(element.textContent); return text.includes("What is true") && text.includes("What changed"); });
       if (orientation) orientation.dataset.bpOrientation = "";
     }
-    if (!document.getElementById("bleuprint-archive-entry")) {
-      var archive = document.createElement("button");
-      archive.id = "bleuprint-archive-entry"; archive.type = "button"; archive.textContent = "Archive";
-      archive.setAttribute("aria-label", "Open Archive and history");
-      archive.style.cssText = "position:fixed;right:26px;bottom:25px;z-index:999999;border:1px solid rgba(18,25,21,.16);border-radius:999px;background:rgba(247,248,246,.94);box-shadow:0 12px 32px rgba(18,25,21,.12);backdrop-filter:blur(14px);padding:10px 14px;color:#17201c;font:500 9px IBM Plex Mono,monospace;letter-spacing:.08em;cursor:pointer";
-      archive.addEventListener("click", function () {
-        if (window.parent !== window) window.parent.postMessage({ type: "bleuprint:open-panel", panel: "archive" }, window.location.origin);
-        else window.location.assign("/admin?open=archive");
-      });
-      document.body.appendChild(archive);
-    }
   }
   var style = document.createElement("style");
   style.textContent = "@media (min-width:760px) and (max-height:820px){[data-bp-orientation]{display:none!important}}";
@@ -92,6 +81,8 @@ window.addEventListener("DOMContentLoaded", function () {
     else if (labels.includes("Performance") || labels.includes("Signals") || labels.includes("Attention")) panel = "performance";
     else if (labels.includes("Compare") || labels.includes("Issues")) panel = "issues";
     else if (labels.includes("Archive")) panel = "archive";
+    else if (labels.includes("Just update") || labels.some(function (label) { return label.indexOf("Hand to ") === 0; })) panel = "issues";
+    else if (labels.includes("Post")) panel = "issues";
     if (!panel) return;
     event.preventDefault(); event.stopImmediatePropagation();
     window.parent.postMessage({ type: "bleuprint:open-panel", panel: panel }, window.location.origin);
