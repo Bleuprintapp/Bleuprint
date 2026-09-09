@@ -28,6 +28,8 @@ export async function POST(request) {
   await ensureSchema();
   const sql = getSql();
   for (const [key, value] of entries) {
+    const prior = await sql`SELECT state_value FROM bleuprint_workspace_state WHERE workspace_id=${WORKSPACE} AND state_key=${key} LIMIT 1`;
+    const previousValue = prior[0]?.state_value;
     await sql`
       INSERT INTO bleuprint_workspace_state (workspace_id, state_key, state_value, updated_by)
       VALUES (${WORKSPACE}, ${key}, ${JSON.stringify(value)}::jsonb, ${member.email})
@@ -36,9 +38,18 @@ export async function POST(request) {
         updated_at = NOW(),
         updated_by = EXCLUDED.updated_by
     `;
+    const detail = { count: Array.isArray(value) ? value.length : null };
+    if (key === "calendar" && Array.isArray(value)) {
+      const before = new Map((Array.isArray(previousValue) ? previousValue : []).map(row => [row.id, row]));
+      detail.changes = value.map(row => {
+        const old = before.get(row.id); if (!old) return { id: row.id, title: row.title, change: "created" };
+        const fields = ["date", "time", "channel", "format", "title", "status"].filter(field => String(old[field] || "") !== String(row[field] || ""));
+        return fields.length ? { id: row.id, title: row.title, previous: Object.fromEntries(fields.map(field => [field, old[field] || null])), next: Object.fromEntries(fields.map(field => [field, row[field] || null])) } : null;
+      }).filter(Boolean).slice(0, 50);
+    }
     await sql`
       INSERT INTO bleuprint_audit_events (workspace_id, actor_email, event_type, source_name, detail)
-      VALUES (${WORKSPACE}, ${member.email}, ${"workspace." + key + ".updated"}, ${key}, ${JSON.stringify({ count: Array.isArray(value) ? value.length : null })}::jsonb)
+      VALUES (${WORKSPACE}, ${member.email}, ${"workspace." + key + ".updated"}, ${key}, ${JSON.stringify(detail)}::jsonb)
     `;
     await createMentionNotifications(sql, { actor:member.email, text:JSON.stringify(value), title:`${member.name} mentioned you in ${key}`, body:`A shared ${key} record was updated.`, link:`/admin?open=${key === "calendar" || key === "campaigns" ? "content" : key}` });
   }

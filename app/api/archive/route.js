@@ -14,8 +14,9 @@ export async function GET(){
     sql`SELECT state_value FROM bleuprint_workspace_state WHERE workspace_id=${WORKSPACE} AND state_key='calendar' LIMIT 1`,
   ]);
   const calendar=Array.isArray(stateRows[0]?.state_value)?stateRows[0].state_value:[];
-  const content=calendar.filter(row=>["Archived","Approved","Published","Done"].includes(row.status)).map(row=>({id:row.id,type:"Content",title:row.title,status:row.status,document:row.sourceDocument||"Content calendar",location:`${row.date||row.day||"No date"} · ${row.channel||"No channel"}`,approvedBy:row.updatedBy||row.owner||"Team",at:row.updatedAt||null}));
-  return NextResponse.json({documents,memory,issues,events,content});
+  const content=calendar.filter(row=>["Approved","Published","Done"].includes(row.status)).map(row=>({id:row.id,type:"Content",title:row.title,status:row.status,document:row.sourceDocument||"Content calendar",location:`${row.date||row.day||"No date"} · ${row.channel||"No channel"}`,approvedBy:row.updatedBy||row.owner||"Team",at:row.updatedAt||null}));
+  const archivedContent=calendar.filter(row=>row.status==="Archived").map(row=>({id:row.id,title:row.title,channel:row.channel,date:row.date||row.day,previousStatus:row.previousStatus,archivedAt:row.archivedAt,sourceDocument:row.sourceDocument||"Content calendar"}));
+  return NextResponse.json({documents,memory,issues,events,content,archivedContent});
 }
 
 export async function PATCH(request){
@@ -27,6 +28,12 @@ export async function PATCH(request){
     await sql`UPDATE bleuprint_memory_entries SET archived_at=NULL, archived_by=NULL, status='extracted', updated_at=NOW(), updated_by=${member.email} WHERE source_document_id=${body.id} AND workspace_id=${WORKSPACE}`;
   } else if(body.type==="memory") await sql`UPDATE bleuprint_memory_entries SET archived_at=NULL, archived_by=NULL, status='extracted', updated_at=NOW(), updated_by=${member.email} WHERE id=${body.id} AND workspace_id=${WORKSPACE}`;
   else if(body.type==="issue") await sql`UPDATE bleuprint_mismatches SET status='open', resolution_note=NULL, resolved_by=NULL, resolved_at=NULL WHERE id=${body.id} AND workspace_id=${WORKSPACE}`;
+  else if(body.type==="content") {
+    const states=await sql`SELECT state_value FROM bleuprint_workspace_state WHERE workspace_id=${WORKSPACE} AND state_key='calendar' LIMIT 1`;
+    const calendar=Array.isArray(states[0]?.state_value)?states[0].state_value:[];
+    const next=calendar.map(row=>row.id===body.id?{...row,status:row.previousStatus||"Draft",previousStatus:undefined,archivedAt:undefined,updatedAt:new Date().toISOString(),updatedBy:member.email}:row);
+    await sql`INSERT INTO bleuprint_workspace_state (workspace_id,state_key,state_value,updated_by) VALUES (${WORKSPACE},'calendar',${JSON.stringify(next)}::jsonb,${member.email}) ON CONFLICT (workspace_id,state_key) DO UPDATE SET state_value=EXCLUDED.state_value,updated_at=NOW(),updated_by=EXCLUDED.updated_by`;
+  }
   else return NextResponse.json({error:"Unsupported archive item"},{status:400});
   await sql`INSERT INTO bleuprint_audit_events (workspace_id,actor_email,event_type,source_name,detail) VALUES (${WORKSPACE},${member.email},'archive.restored',${body.type},${JSON.stringify({id:body.id})}::jsonb)`;
   return NextResponse.json({ok:true});

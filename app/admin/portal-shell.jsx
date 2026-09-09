@@ -110,7 +110,7 @@ export default function PortalShell({ member }) {
   useEffect(()=>{
     function receive(event){
       if(event.origin!==window.location.origin||event.source!==frameRef.current?.contentWindow)return;
-      if(event.data?.type==="bleuprint:open-panel"&&["memory","roadmap","content","issues","performance"].includes(event.data.panel))setPanel(event.data.panel);
+      if(event.data?.type==="bleuprint:open-panel"&&["memory","roadmap","content","issues","performance","archive"].includes(event.data.panel))setPanel(event.data.panel);
       if(event.data?.type==="bleuprint:state-changed"&&event.data.key==="bleuprint.passport.calendar")try{const rows=JSON.parse(event.data.value);if(Array.isArray(rows))saveContent(rows,campaigns);}catch{}
     }
     window.addEventListener("message",receive);return()=>window.removeEventListener("message",receive);
@@ -126,8 +126,9 @@ export default function PortalShell({ member }) {
       <button onClick={()=>setPanel("content")}><span>+</span>Content<small>{calendar.filter(row=>row.status!=="Archived").length}</small></button>
       <button onClick={()=>setPanel("issues")}><span>!</span>Signals<small>{openIssues.length}</small></button>
       <button onClick={()=>setPanel("performance")}><span>↟</span>Performance<small>{performance.metrics?.length||0}</small></button>
+      <button onClick={()=>setPanel("archive")}><span>⌁</span>Archive<small>{archive.content?.length||0}</small></button>
     </nav>
-    <nav className="portal-account-actions"><button className={unread?"has-alert":""} onClick={()=>{setPanel("issues");readNotifications();}}>Updates{unread?<b>{unread}</b>:null}</button><button onClick={()=>setPanel("archive")}>Archive</button><a href="/account">{member.name}</a></nav>
+    <nav className="portal-account-actions"><button className={unread?"has-alert":""} onClick={()=>{setPanel("issues");readNotifications();}}>Updates{unread?<b>{unread}</b>:null}</button><a href="/account">{member.name}</a></nav>
     {ready?<iframe ref={frameRef} className="portal-experience-frame" src="/admin/experience" name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write"/>:null}
     {panel==="memory"?<WorkspaceModal title="Live memory" kicker="PASSPORT / SOURCES + PROVENANCE" {...common}><MemoryPanel sources={sources} entries={memory} mismatches={mismatches} connectors={connectors} onUpload={uploadSource} onRefresh={refreshSources} onUpdate={updateSource} onArchiveSource={archiveSource} onCreateMemory={createMemory} onUpdateMemory={updateMemory} status={status}/></WorkspaceModal>:null}
     {panel==="roadmap"?<WorkspaceModal title="Build roadmap" kicker="PASSPORT / OPERATING ORDER" {...common} actions={<a className="original-link" href="/hq/passport/roadmap.html" target="_blank" rel="noreferrer">Designed view ↗</a>}><RoadmapPanel roadmap={roadmap} onSave={saveRoadmap} onUpload={uploadSource} onOpenContent={()=>setPanel("content")} member={member}/></WorkspaceModal>:null}
