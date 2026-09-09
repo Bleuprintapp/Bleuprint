@@ -28,6 +28,7 @@ function readCalendarArchive() {
 
 export default function PortalShell({ member }) {
   const frameRef = useRef(null);
+  const [frameSource, setFrameSource] = useState("/admin/experience");
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [tab, setTab] = useState("archive");
   const [saved, setSaved] = useState([]);
@@ -83,9 +84,11 @@ export default function PortalShell({ member }) {
     <nav className="portal-quick-actions" aria-label={`Portal shortcuts for ${member?.name || "member"}`}>
       <a href="/account"><span>○</span>{member?.name || "Account"}</a>
       <button onClick={() => { refreshArchive(); setArchiveOpen(true); }}><span>↘</span>Archive</button>
-      <a href="/content-studio"><span>+</span>Content system</a>
+      <a href="/hq/passport/roadmap.html" target="_blank" rel="noreferrer"><span>35</span>Roadmap</a>
+      <a href="/hq/passport/week-one.html" target="_blank" rel="noreferrer"><span>11</span>Week one plan</a>
+      <button className="portal-primary-action" onClick={() => setFrameSource(`/admin/experience?open=campaign&t=${Date.now()}`)}><span>+</span>Campaign generator</button>
     </nav>
-    {workspaceReady ? <iframe ref={frameRef} onLoad={connectFrame} className="portal-experience-frame" src="/admin/experience" name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write" /> : null}
+    {workspaceReady ? <iframe ref={frameRef} onLoad={connectFrame} className="portal-experience-frame" src={frameSource} name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write" /> : null}
     {archiveOpen ? <div className="portal-archive-layer" onClick={() => setArchiveOpen(false)}>
       <section className="portal-archive" onClick={event => event.stopPropagation()}>
         <header><div><small>PASSPORT / RECORD</small><h1>Archive</h1><p>Approved and completed work stays connected to the document and exact place it came from.</p></div><button onClick={() => setArchiveOpen(false)} aria-label="Close archive">×</button></header>
