@@ -9,6 +9,11 @@
  * before anything is written, and the live keys are not touched, so the
  * old code keeps working until it is switched over.
  */
+if (!process.execArgv.includes("--no-warnings") && !process.env.BLEU_MIGRATE_CHILD) {
+  const { spawnSync } = await import("node:child_process");
+  const r = spawnSync(process.execPath, ["--no-warnings", ...process.argv.slice(1)], { stdio: "inherit", env: { ...process.env, BLEU_MIGRATE_CHILD: "1" } });
+  process.exit(r.status ?? 1);
+}
 import { neon } from "@neondatabase/serverless";
 import { ensureContentSchema, rowFromBlob } from "../lib/content-schema.js";
 
@@ -31,7 +36,15 @@ const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL is not set and .env.local was not found next to the repo."); process.exit(1); }
 const sql = neon(url);
 
-const state = await sql`SELECT state_key, state_value FROM bleuprint_workspace_state WHERE workspace_id=${WORKSPACE} AND state_key IN ('calendar','campaigns')`;
+let state;
+try {
+  state = await sql`SELECT state_key, state_value FROM bleuprint_workspace_state WHERE workspace_id=${WORKSPACE} AND state_key IN ('calendar','campaigns')`;
+} catch (error) {
+  console.error("Could not reach the database from this computer.");
+  console.error("Reason:", error?.cause?.message || error?.message || error);
+  console.error("Run this from Terminal on the Mac (not inside another sandbox), on a normal internet connection, and try again.");
+  process.exit(1);
+}
 const blob = Object.fromEntries(state.map(r => [r.state_key, r.state_value]));
 const calendar = Array.isArray(blob.calendar) ? blob.calendar : [];
 const campaigns = Array.isArray(blob.campaigns) ? blob.campaigns : [];
