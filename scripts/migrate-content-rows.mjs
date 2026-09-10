@@ -17,8 +17,18 @@ const ACTOR = "migration@bleuprint";
 const APPLY = process.argv.includes("--apply");
 const stamp = new Date().toISOString().slice(0, 10).replaceAll("-", "_");
 
+// Load .env.local ourselves so the command is just `node scripts/migrate-content-rows.mjs`.
+import { readFileSync } from "node:fs";
+if (!process.env.DATABASE_URL) {
+  try {
+    for (const line of readFileSync(new URL("../.env.local", import.meta.url), "utf8").split("\n")) {
+      const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*"?([^"\n]*)"?\s*$/);
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2];
+    }
+  } catch { /* no .env.local; fall through to the check below */ }
+}
 const url = process.env.DATABASE_URL;
-if (!url) { console.error("DATABASE_URL is not set"); process.exit(1); }
+if (!url) { console.error("DATABASE_URL is not set and .env.local was not found next to the repo."); process.exit(1); }
 const sql = neon(url);
 
 const state = await sql`SELECT state_key, state_value FROM bleuprint_workspace_state WHERE workspace_id=${WORKSPACE} AND state_key IN ('calendar','campaigns')`;
