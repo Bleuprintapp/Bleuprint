@@ -18,7 +18,7 @@ export function WorkspaceModal({title,kicker,children,close,wide=false,actions=n
   </div>;
 }
 
-export function MemoryPanel({sources,entries,mismatches,connectors,onUpload,onRefresh,onUpdate,onArchiveSource,onCreateMemory,onUpdateMemory,status}){
+export function MemoryPanel({sources,entries,mismatches,connectors,microsoft,microsoftNotice,onDismissMicrosoftNotice,onUpload,onRefresh,onUpdate,onArchiveSource,onCreateMemory,onUpdateMemory,status}){
   const filesRef=useRef(null),folderRef=useRef(null);
   const [tab,setTab]=useState("intelligence"),[area,setArea]=useState("All"),[editing,setEditing]=useState(null);
   const [draft,setDraft]=useState({summary:"",document_type:"",destination:""});
@@ -36,8 +36,54 @@ export function MemoryPanel({sources,entries,mismatches,connectors,onUpload,onRe
       <section className="memory-entry-list">{visible.length?visible.map(item=><MemoryEntry key={item.id} item={item} onUpdate={onUpdateMemory}/>):<div className="empty-workspace"><h3>No intelligence in this area yet.</h3><p>Add an explicit decision above or upload the source document that contains it.</p></div>}</section>
     </>:null}
     {tab==="sources"?<section className="memory-records">{sources.length?sources.map(source=><article key={source.id} className={source.is_record?"is-record":""}><div className="memory-meta"><span>{source.document_type}</span><small>{source.destination}</small></div><h3><a href={sourceHref(source)} target="_blank" rel="noreferrer">{source.name}</a></h3>{editing===source.id?<div className="memory-edit"><textarea value={draft.summary} onChange={event=>setDraft(current=>({...current,summary:event.target.value}))}/><input aria-label="Document type" value={draft.document_type} onChange={event=>setDraft(current=>({...current,document_type:event.target.value}))}/><input aria-label="Destination" value={draft.destination} onChange={event=>setDraft(current=>({...current,destination:event.target.value}))}/><button onClick={async()=>{await onUpdate(source.id,draft);setEditing(null);}}>Save source note</button><button onClick={()=>setEditing(null)}>Cancel</button></div>:<p>{source.context?.summary?.slice(0,420)||"Stored. Text extraction is not available for this format yet."}</p>}<footer><a href={sourceHref(source)} target="_blank" rel="noreferrer">Open source ↗</a><button onClick={()=>{setEditing(source.id);setDraft({summary:source.context?.summary||"",document_type:source.document_type||"reference",destination:source.destination||"Source inbox"});}}>Edit note</button><button className={source.is_record?"confirmed":""} onClick={()=>onUpdate(source.id,{markRecord:true})}>{source.is_record?"Confirmed record":"Confirm as record"}</button><button className="danger-text" onClick={()=>onArchiveSource(source.id)}>Archive</button></footer></article>):<div className="empty-workspace"><h3>Clean workspace ready.</h3><p>Start with the canonical context, brand guide, mission plan, roadmap, launch-week plan, and current captions/assets. Old portal demo sources are not treated as truth.</p></div>}</section>:null}
-    {tab==="connectors"?<section className="connector-list">{connectors.map(item=><article key={item.id}><i className={item.state==="ready"?"ready":""}/><div><h3>{item.name}</h3><p>{item.mode}</p></div><strong>{item.state.replaceAll("-"," ")}</strong></article>)}</section>:null}
+    {tab==="connectors"?<section className="connector-list"><MicrosoftConnection status={microsoft} notice={microsoftNotice} onDismiss={onDismissMicrosoftNotice}/>{connectors.filter(item=>item.id!=="microsoft").map(item=><article key={item.id}><i className={item.state==="ready"?"ready":""}/><div><h3>{item.name}</h3><p>{item.mode}</p></div><strong>{item.state.replaceAll("-"," ")}</strong></article>)}</section>:null}
   </div>;
+}
+
+const MS_STATE_LABEL = {
+  loading: "checking",
+  "needs-app-credentials": "not configured",
+  "ready-to-authorize": "ready to connect",
+  "needs-reauthorization": "needs reconnecting",
+  authorized: "connected",
+};
+
+function MicrosoftConnection({status, notice, onDismiss}){
+  const state = status?.state || "loading";
+  const folders = status?.folders || [];
+  const canConnect = state === "ready-to-authorize" || state === "needs-reauthorization" || state === "authorized";
+  return <article className={`ms-connection ${state}`}>
+    <header>
+      <div><h3>Microsoft 365</h3><p>OneDrive files, delegated access as the signed-in user</p></div>
+      <strong>{MS_STATE_LABEL[state] || state.replaceAll("-", " ")}</strong>
+    </header>
+
+    {notice ? <p className={`ms-notice ${notice.ok ? "ok" : "bad"}`}>
+      <span>{notice.ok ? "Microsoft connected." : "Microsoft did not connect."}</span>
+      {notice.reason ? <em>{notice.reason}</em> : null}
+      <button onClick={onDismiss} aria-label="Dismiss">×</button>
+    </p> : null}
+
+    <p className="ms-detail">{status?.detail || "Checking the Microsoft connection…"}</p>
+
+    {state === "needs-app-credentials" && status?.missing?.length
+      ? <p className="ms-missing">Missing on this deployment: {status.missing.join(", ")}</p>
+      : null}
+
+    {state === "authorized" ? <dl className="ms-facts">
+      <div><dt>Account</dt><dd>{status.account || "not reported"}</dd></div>
+      <div><dt>Permissions</dt><dd>{(status.scopes || []).filter(item => !["openid","profile"].includes(item)).join(", ") || "not reported"}</dd></div>
+      <div><dt>Canonical folder</dt><dd>{folders.length ? folders[0].folder_name : "none selected yet"}</dd></div>
+      <div><dt>Last synced</dt><dd>{folders[0]?.last_synced_at ? new Date(folders[0].last_synced_at).toLocaleString() : "never"}</dd></div>
+    </dl> : null}
+
+    {canConnect ? <footer>
+      <a className="ms-connect" href="/api/microsoft/connect">{state === "authorized" ? "Reconnect" : "Connect Microsoft"}</a>
+      {state === "authorized"
+        ? <small>Folder selection and syncing are not built yet. Connecting does not move any files.</small>
+        : <small>You will be sent to Microsoft to sign in. Nothing is read until a folder is chosen.</small>}
+    </footer> : null}
+  </article>;
 }
 
 function MemoryEntry({item,onUpdate}){
