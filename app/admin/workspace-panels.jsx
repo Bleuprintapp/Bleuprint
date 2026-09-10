@@ -86,6 +86,102 @@ function MicrosoftConnection({status, notice, onDismiss}){
   </article>;
 }
 
+/* This Week — the front door.
+ *
+ * One object on a quiet field. The focus sentence is derived from the dated
+ * plan, never typed, and the page says which document it came from. When the
+ * plan does not cover this week it says so rather than inventing a priority.
+ */
+const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const shortDay = value => {
+  const date = new Date(`${value}T12:00:00Z`);
+  return Number.isNaN(date.getTime()) ? "" : `${DAY_NAMES[date.getUTCDay()].slice(0,3)} ${date.getUTCDate()}`;
+};
+
+export function ThisWeekPanel({week, onOpen}){
+  if(!week) return <div className="tw"><p className="tw-quiet">Reading the plan…</p></div>;
+  const {focus = {}, counts = {}, sources = {}} = week;
+  const today = week.week?.today;
+
+  return <div className="tw">
+    <p className="tw-stamp">
+      <span>Week of {week.week?.label}</span>
+      <span>{today ? DAY_NAMES[new Date(`${today}T12:00:00Z`).getUTCDay()] : ""}</span>
+    </p>
+
+    <section className={`tw-object ${focus.line ? "" : "absent"}`}>
+      <span className="tw-kicker">This week we are on</span>
+      {focus.line
+        ? <><h2>{focus.line}</h2>{focus.why ? <p className="tw-why">{focus.why}</p> : null}</>
+        : <><h2>Nothing dated</h2><p className="tw-why">{focus.absent}</p></>}
+      {focus.source ? <p className="tw-source">{focus.source}{focus.windows?.length ? ` · ${focus.windows.join(" · ")}` : ""}</p> : null}
+    </section>
+
+    <nav className="tw-counts">
+      {[["Shipping",counts.shipping],["Due",counts.due],["Needs you",counts.decisions],["Blocked",counts.blocked],["Overdue",counts.overdue]]
+        .map(([name,value])=><span key={name} className={value ? "live" : ""}><b>{value ?? 0}</b>{name}</span>)}
+    </nav>
+
+    <TwList title="Going out" count={counts.shipping} empty="Nothing is scheduled between now and Sunday." action={["Open the calendar",()=>onOpen("content")]}>
+      {(week.shipping||[]).map(row=><li key={row.id}>
+        <time>{shortDay(row.date||row.day)}</time>
+        <div><strong>{row.title}</strong><small>{row.channel}{row.time?` · ${row.time}`:""}</small></div>
+        <em className={/blocked/i.test(row.status||"")?"bad":""}>{row.status}</em>
+      </li>)}
+    </TwList>
+
+    <TwList title="Due this week" count={counts.due} empty="Nothing on the roadmap falls due before Sunday." action={["Open the roadmap",()=>onOpen("roadmap")]}>
+      {(week.dueThisWeek||[]).map(task=><li key={task.id}>
+        <time>{task.due}</time>
+        <div><strong>{task.title}</strong><small>{task.phase}</small></div>
+        <em>{task.ownerName}</em>
+      </li>)}
+      {(week.milestones||[]).map(item=><li key={`m-${item.title}`}>
+        <time>{item.dueLabel}</time>
+        <div><strong>{item.title}</strong><small>Mission plan</small></div>
+        <em>{item.owner||""}</em>
+      </li>)}
+    </TwList>
+
+    <TwList title="Needs a person" count={counts.decisions} empty="Nothing is waiting on a decision." action={["Open signals",()=>onOpen("issues")]}>
+      {(week.decisions||[]).map(item=><li key={item.id}>
+        <time className={item.kind==="conflict"?"bad":""}>{item.kind}</time>
+        <div><strong>{item.title}</strong><small>{item.where}</small></div>
+        <em>{item.owner||"unassigned"}</em>
+      </li>)}
+    </TwList>
+
+    {counts.blocked||counts.overdue ? <TwList title="Held up" count={(counts.blocked||0)+(counts.overdue||0)} empty="" action={["Open the roadmap",()=>onOpen("roadmap")]}>
+      {(week.overdue||[]).map(task=><li key={`o-${task.id}`}>
+        <time className="bad">{task.due}</time>
+        <div><strong>{task.title}</strong><small>overdue · {task.phase}</small></div>
+        <em>{task.ownerName}</em>
+      </li>)}
+      {(week.blocked||[]).map(task=><li key={`b-${task.id}`}>
+        <time className="bad">blocked</time>
+        <div><strong>{task.title}</strong><small>{task.phase}</small></div>
+        <em>{task.ownerName}</em>
+      </li>)}
+    </TwList> : null}
+
+    <footer className="tw-foot">
+      <span>Focus read from {sources.plan ? `${sources.plan} and the build roadmap` : "the build roadmap"}. Change the dates in the plan and this changes.</span>
+      {sources.planMissing ? <span className="bad">{sources.planMissing}</span> : null}
+      {counts.undated ? <span>{counts.undated} open task{counts.undated===1?"":"s"} carry no date, so they never appear here. That is the plan&rsquo;s gap, not the system&rsquo;s.</span> : null}
+      {(week.continuous||[]).length ? <span>Running underneath: {week.continuous.map(item=>item.name).join(", ")}.</span> : null}
+    </footer>
+  </div>;
+}
+
+function TwList({title, count, empty, action, children}){
+  const items = Array.isArray(children) ? children.flat().filter(Boolean) : children;
+  const has = Array.isArray(items) ? items.length : !!items;
+  return <section className="tw-list">
+    <header><h3>{title}</h3><b>{count ?? 0}</b>{action ? <button onClick={action[1]}>{action[0]}</button> : null}</header>
+    {has ? <ul>{items}</ul> : <p className="tw-quiet">{empty}</p>}
+  </section>;
+}
+
 function MemoryEntry({item,onUpdate}){
   const [editing,setEditing]=useState(false),[draft,setDraft]=useState({area:item.area,title:item.title,body:item.body,status:item.status});
   return <article className={`memory-entry ${item.status}`}><header><span>{item.area}</span><b>{item.status.replaceAll("_"," ")}</b></header>{editing?<><input value={draft.title} onChange={event=>setDraft(current=>({...current,title:event.target.value}))}/><textarea value={draft.body} onChange={event=>setDraft(current=>({...current,body:event.target.value}))}/><div className="memory-entry-actions"><select value={draft.area} onChange={event=>setDraft(current=>({...current,area:event.target.value}))}>{AREAS.map(area=><option key={area}>{area}</option>)}</select><select value={draft.status} onChange={event=>setDraft(current=>({...current,status:event.target.value}))}>{["extracted","confirmed","suggested","conflict","needs_decision"].map(status=><option key={status}>{status}</option>)}</select><button onClick={async()=>{await onUpdate(item.id,draft);setEditing(false);}}>Save</button><button onClick={()=>setEditing(false)}>Cancel</button></div></>:<><h3>{item.title}</h3><p>{item.body}</p><footer><div><strong>{item.source_name||"Team entry"}</strong><span>{item.source_location||"Direct entry"}</span></div><small>Updated by {item.updated_by}</small><button onClick={()=>setEditing(true)}>Edit</button><button onClick={()=>onUpdate(item.id,{action:"archive"})}>Archive</button></footer></>}</article>;

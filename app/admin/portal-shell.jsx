@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArchivePanel, ContentPanel, IssuesPanel, MemoryPanel, PerformancePanel, RoadmapPanel, WorkspaceModal } from "./workspace-panels";
+import { ArchivePanel, ContentPanel, IssuesPanel, MemoryPanel, PerformancePanel, RoadmapPanel, ThisWeekPanel, WorkspaceModal } from "./workspace-panels";
 
 const getJson = async url => {
   const response = await fetch(url, { cache:"no-store" });
@@ -18,6 +18,7 @@ export default function PortalShell({ member }) {
   const [analysis,setAnalysis]=useState(null), [performance,setPerformance]=useState({metrics:[],upcoming:[],missing:[],buffer:{state:"needs-api-key"}}), [connectors,setConnectors]=useState([]);
   const [status,setStatus]=useState("Connecting the shared Passport workspace…"), [ready,setReady]=useState(false);
   const [microsoft,setMicrosoft]=useState(null), [microsoftNotice,setMicrosoftNotice]=useState(null);
+  const [week,setWeek]=useState(null);
 
   const refreshOperational = useCallback(async ({ quiet=false }={}) => {
     try {
@@ -36,6 +37,10 @@ export default function PortalShell({ member }) {
     } finally { setReady(true); }
   },[member.name]);
 
+  const refreshWeek=useCallback(async()=>{
+    try{setWeek(await getJson("/api/this-week"));}catch{}
+  },[]);
+
   const refreshMicrosoft=useCallback(async()=>{
     try{setMicrosoft(await getJson("/api/microsoft/status"));}
     catch{setMicrosoft({state:"unavailable",detail:"The Microsoft connection status could not be read just now."});}
@@ -44,9 +49,11 @@ export default function PortalShell({ member }) {
   useEffect(()=>{
     refreshOperational();
     refreshMicrosoft();
+    refreshWeek();
     const params=new URLSearchParams(window.location.search);
     const requested=params.get("open");
-    if(["memory","roadmap","content","issues","performance","archive"].includes(requested))setPanel(requested);
+    if(["week","memory","roadmap","content","issues","performance","archive"].includes(requested))setPanel(requested);
+    else if(!requested)setPanel("week");
     const microsoftResult=params.get("microsoft");
     if(microsoftResult){
       setMicrosoftNotice({ok:microsoftResult==="connected",reason:params.get("reason")||""});
@@ -57,7 +64,7 @@ export default function PortalShell({ member }) {
     }
     const timer=window.setInterval(()=>refreshOperational({quiet:true}),10000);
     return()=>window.clearInterval(timer);
-  },[refreshOperational,refreshMicrosoft]);
+  },[refreshOperational,refreshMicrosoft,refreshWeek]);
 
   const saveContent=useCallback(async(nextCalendar,nextCampaigns)=>{
     const now=new Date().toISOString();
@@ -126,7 +133,7 @@ export default function PortalShell({ member }) {
   useEffect(()=>{
     function receive(event){
       if(event.origin!==window.location.origin||event.source!==frameRef.current?.contentWindow)return;
-      if(event.data?.type==="bleuprint:open-panel"&&["memory","roadmap","content","issues","performance","archive"].includes(event.data.panel))setPanel(event.data.panel);
+      if(event.data?.type==="bleuprint:open-panel"&&["week","memory","roadmap","content","issues","performance","archive"].includes(event.data.panel))setPanel(event.data.panel);
       if(event.data?.type==="bleuprint:state-changed"&&event.data.key==="bleuprint.passport.calendar")try{const rows=JSON.parse(event.data.value);if(Array.isArray(rows))saveContent(rows,campaigns);}catch{}
     }
     window.addEventListener("message",receive);return()=>window.removeEventListener("message",receive);
@@ -139,6 +146,7 @@ export default function PortalShell({ member }) {
   return <main className="portal-experience-shell">
     <p className="portal-record-notice">Blueprint map · use the workspaces below for shared updates, archive, and source-backed records.</p>
     <nav className="portal-system-actions" aria-label="Passport workspaces">
+      <button className="tw-nav" onClick={()=>setPanel("week")}><span>◈</span>This week<small>{(week?.counts?.decisions||0)+(week?.counts?.blocked||0)||""}</small></button>
       <button onClick={()=>setPanel("memory")}><span>◎</span>Memory<small>{memory.length}</small></button>
       <button onClick={()=>setPanel("roadmap")}><span>↗</span>Roadmap<small>{roadmap?.phases?.flatMap(item=>item.tasks).filter(item=>!roadmap.state?.done?.[item.id]&&!roadmap.state?.archived?.[item.id]).length||0}</small></button>
       <button onClick={()=>setPanel("content")}><span>+</span>Content<small>{calendar.filter(row=>row.status!=="Archived").length}</small></button>
@@ -148,6 +156,7 @@ export default function PortalShell({ member }) {
     </nav>
     <nav className="portal-account-actions"><button className={unread?"has-alert":""} onClick={()=>{setPanel("issues");readNotifications();}}>Updates{unread?<b>{unread}</b>:null}</button><a href="/account">{member.name}</a></nav>
     {ready?<iframe ref={frameRef} className="portal-experience-frame" src="/admin/experience" name="bleuprint-portal" title="Bleuprint Intelligence Portal — Passport" allow="clipboard-write"/>:null}
+    {panel==="week"?<WorkspaceModal title="This week" kicker="PASSPORT / DERIVED FROM THE PLAN" {...common}><ThisWeekPanel week={week} onOpen={setPanel}/></WorkspaceModal>:null}
     {panel==="memory"?<WorkspaceModal title="Live memory" kicker="PASSPORT / SOURCES + PROVENANCE" {...common}><MemoryPanel sources={sources} entries={memory} mismatches={mismatches} connectors={connectors} microsoft={microsoft} microsoftNotice={microsoftNotice} onDismissMicrosoftNotice={()=>setMicrosoftNotice(null)} onUpload={uploadSource} onRefresh={refreshSources} onUpdate={updateSource} onArchiveSource={archiveSource} onCreateMemory={createMemory} onUpdateMemory={updateMemory} status={status}/></WorkspaceModal>:null}
     {panel==="roadmap"?<WorkspaceModal title="Build roadmap" kicker="PASSPORT / OPERATING ORDER" {...common} actions={<a className="original-link" href="/hq/passport/roadmap.html" target="_blank" rel="noreferrer">Designed view ↗</a>}><RoadmapPanel roadmap={roadmap} onSave={saveRoadmap} onUpload={uploadSource} onOpenContent={()=>setPanel("content")} member={member}/></WorkspaceModal>:null}
     {panel==="content"?<WorkspaceModal title="Content" kicker="PASSPORT / CALENDAR → CAMPAIGN" {...common} actions={<a className="original-link" href="/hq/passport/week-one.html" target="_blank" rel="noreferrer">Designed week ↗</a>}><ContentPanel calendar={calendar} campaigns={campaigns} onSave={saveContent} onUpload={uploadSource} onAnalyze={runAnalysis} analysis={analysis} status={status} onOpenIssues={()=>setPanel("issues")} buffer={performance.buffer} onBufferSync={syncBuffer}/></WorkspaceModal>:null}
