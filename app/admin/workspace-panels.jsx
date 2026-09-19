@@ -73,6 +73,7 @@ function MicrosoftConnection({status, notice, onDismiss}){
     {state === "authorized" ? <dl className="ms-facts">
       <div><dt>Account</dt><dd>{status.account || "not reported"}</dd></div>
       <div><dt>Permissions</dt><dd>{(status.scopes || []).filter(item => !["openid","profile"].includes(item)).join(", ") || "not reported"}</dd></div>
+      <div><dt>Stays connected</dt><dd>{status.renews === undefined ? "not reported" : status.renews ? "yes, it renews itself" : "no, it will drop in about an hour"}</dd></div>
       <div><dt>Canonical folder</dt><dd>{folders.length ? folders[0].folder_name : "none selected yet"}</dd></div>
       <div><dt>Last synced</dt><dd>{folders[0]?.last_synced_at ? new Date(folders[0].last_synced_at).toLocaleString() : "never"}</dd></div>
     </dl> : null}

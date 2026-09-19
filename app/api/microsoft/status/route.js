@@ -62,6 +62,10 @@ export async function GET() {
     connectedAt: row.connected_at,
     expiresAt: row.expires_at,
     scopes: String(row.scope || "").split(" ").filter(Boolean),
+    // Whether a refresh token was stored. Without one the connection stops
+    // working about an hour after it is made, which looks like a random
+    // failure rather than a missing permission.
+    renews: Boolean(row.has_refresh),
     folders,
   });
 }
