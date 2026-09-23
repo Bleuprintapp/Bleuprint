@@ -156,6 +156,8 @@
       localStorage.setItem("bleuprint-diagnosis", JSON.stringify(Object.assign({ at: new Date().toISOString() }, payload)));
     } catch (e) {}
 
+    if (window.fbq) fbq("trackCustom", "SelfCheckComplete");
+
     fetch("https://formsubmit.co/ajax/kalenagardner07@gmail.com", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
