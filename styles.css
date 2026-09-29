@@ -391,6 +391,9 @@ a:hover { color: var(--emerald); }
 .clean-list li { padding: 12px 0 12px 24px; border-bottom: 1px solid var(--hair); position: relative; }
 .clean-list li::before { content: "+"; position: absolute; left: 0; color: var(--emerald); font: 400 11px/1.8 "IBM Plex Mono", monospace; }
 .offer-card .btn { margin-top: auto; }
+.offer-card .cta-stack { margin-top: auto; }
+.cta-stack .btn { margin-top: 0; }
+.cta-helper { margin: 10px 0 0; font-size: 13px; line-height: 1.5; text-align: center; opacity: .7; }
 .final-cta h2 { font-size: clamp(44px, 8vw, 84px); max-width: 14ch; }
 .night-link { padding-bottom: 3px; border-bottom: 1px solid var(--hair-on-night); }
 
