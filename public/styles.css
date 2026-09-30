@@ -892,8 +892,3 @@ a:hover { color: var(--emerald); }
 .rev-mark img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 6px; background: var(--paper); z-index: 1; }
 .rev-leave { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--hair); max-width: 640px; }
 .rev-leave .body { margin: 12px 0 24px; color: var(--slate); }
-
-.booked-calendar { min-width: 320px; height: 1040px; margin: 0 -8px; }
-@media (min-width: 760px) {
-  .booked-calendar { height: 720px; margin: 0; }
-}

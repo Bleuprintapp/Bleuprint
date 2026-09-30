@@ -52,9 +52,9 @@
     drift();
   }
 
-  // Any link to the Square checkout counts as starting checkout.
+  // Any link to the Square booking page counts as starting checkout.
   document.addEventListener("click", function (e) {
-    var link = e.target.closest && e.target.closest('a[href^="https://square.link/"]');
+    var link = e.target.closest && e.target.closest('a[href^="https://book.squareup.com/"]');
     if (link && window.fbq) fbq("track", "InitiateCheckout", { value: 199, currency: "USD" });
   });
 })();
