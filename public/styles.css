@@ -892,3 +892,93 @@ a:hover { color: var(--emerald); }
 .rev-mark img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 6px; background: var(--paper); z-index: 1; }
 .rev-leave { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--hair); max-width: 640px; }
 .rev-leave .body { margin: 12px 0 24px; color: var(--slate); }
+
+/* ============ Diagnosis audit questions (audit.html) ============ */
+.aq { padding: 56px 0 120px; }
+.aq-wrap { max-width: 44rem; }
+.aq-intro { margin-bottom: 56px; }
+.aq-title { font-size: clamp(44px, 9vw, 76px); margin-top: 18px; }
+.aq-lede { color: var(--slate); max-width: 46ch; margin: 20px 0 0; }
+
+.aq-meter { height: 1px; background: var(--hair); overflow: hidden; }
+.aq-meter span {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 900ms var(--ease);
+}
+.aq-status { color: var(--slate); margin: 16px 0 0; min-height: 1.6em; }
+
+.aq-form { margin-top: 40px; }
+.aq-step { border: 0; margin: 0 0 48px; padding: 0; min-width: 0; }
+.aq-q {
+  font-size: clamp(30px, 6vw, 46px);
+  line-height: 1.08;
+  max-width: 22ch;
+  padding: 0;
+  margin: 0 0 20px;
+}
+.aq-q label { cursor: text; }
+.aq-hint { color: var(--slate); font-size: 15px; line-height: 1.55; max-width: 48ch; margin: -6px 0 22px; }
+.aq-step > .aq-hint:last-child { margin: 16px 0 0; }
+.aq-fields { display: grid; gap: 22px; }
+
+/* Answers sit on a single hairline, not in boxes. */
+.aq-step textarea,
+.aq-step .field input {
+  width: 100%;
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--hair);
+  border-radius: 0;
+  padding: 10px 0 14px;
+  outline: none;
+  resize: none;
+  transition: border-color 500ms var(--ease);
+}
+.aq-step textarea { min-height: 7.5em; field-sizing: content; max-height: 60vh; }
+.aq-step textarea:focus,
+.aq-step .field input:focus { border-bottom-color: var(--emerald); }
+
+.aq-choices { gap: 10px; }
+.aq-choices .choice { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 20px; }
+.aq-choices .choice input { position: absolute; opacity: 0; pointer-events: none; }
+.aq-choices .choice:has(input:checked) { border-color: var(--emerald); color: var(--emerald); }
+.aq-choices .choice:has(input:focus-visible) { outline: 2px solid var(--emerald); outline-offset: 2px; }
+
+.aq-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 8px; }
+.aq-nav .btn { min-width: 11rem; margin-left: auto; }
+.aq-nav [hidden], .aq-key[hidden] { display: none; }
+.aq-back { background: none; border: 0; padding: 12px 0; color: var(--slate); cursor: pointer; }
+.aq-back:hover { color: var(--ink); }
+.aq-key { color: var(--slate); margin: 22px 0 0; text-align: right; }
+.aq-form .err { margin: 0 0 18px; }
+
+/* One question at a time once the script is running. */
+.aq-form.is-stepped .aq-step { display: none; }
+.aq-form.is-stepped .aq-step.is-on { display: block; animation: aq-in 700ms var(--ease) both; }
+.aq-form.is-stepped .aq-step.is-on.from-back { animation-name: aq-in-back; }
+.aq-form:not(.is-stepped) .aq-nav > :not(.aq-send),
+.aq-form:not(.is-stepped) .aq-key { display: none; }
+@keyframes aq-in { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes aq-in-back { from { opacity: 0; transform: translateY(-28px); } to { opacity: 1; transform: none; } }
+
+.aq-done { display: none; outline: none; }
+.aq-done.is-on { display: block; animation: aq-in 900ms var(--ease) both; }
+.aq-done .text-link { margin-top: 32px; }
+
+@media (max-width: 719px) {
+  .aq { padding-top: 32px; }
+  .aq-intro { margin-bottom: 40px; }
+  .aq-key { display: none; }
+  .aq-nav .btn { min-width: 0; flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aq-meter span { transition: none; }
+}
