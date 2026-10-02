@@ -1006,7 +1006,8 @@ a:hover { color: var(--emerald); }
 .mk-capture { background: var(--paper); }
 .mk-capture .label { color: var(--slate); margin: 0 0 16px; }
 .mk-slot { min-height: 120px; }
-.mk-slot iframe { width: 100%; border: 0; }
+/* form_embed.js sizes the iframe to the form; the min-height covers the moment before it does */
+.mk-slot iframe { display: block; width: 100%; min-height: 460px; border: 0; }
 .mk-pending { margin: 0; padding: 22px 18px; border: 1px dashed var(--hair); border-radius: 4px; color: var(--slate); font-size: 15px; text-align: center; }
 .mk-done { display: none; }
 .mk-done .display-m { font-size: clamp(32px, 6vw, 44px); margin: 0 0 14px; }
