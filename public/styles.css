@@ -982,3 +982,42 @@ a:hover { color: var(--emerald); }
 @media (prefers-reduced-motion: reduce) {
   .aq-meter span { transition: none; }
 }
+
+/* Muse starter kit (/muse-starter-kit) */
+.mk-banner {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  display: block;
+  padding: 11px 20px;
+  background: var(--night);
+  color: var(--paper);
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: center;
+}
+.mk-banner strong { color: var(--gold); font-weight: 500; }
+.mk-banner:hover { color: var(--paper); }
+.mk-banner:hover strong { text-decoration: underline; }
+.mk-hero { padding: 56px 0 72px; }
+.mk-lockup { display: grid; gap: 40px; align-items: center; }
+.mk-title { font-size: clamp(46px, 12vw, 92px); max-width: 12ch; }
+.mk-sub { margin: 24px 0 0; max-width: 40ch; color: var(--slate); }
+.mk-capture { background: var(--paper); }
+.mk-capture .label { color: var(--slate); margin: 0 0 16px; }
+.mk-slot { min-height: 120px; }
+.mk-slot iframe { width: 100%; border: 0; }
+.mk-pending { margin: 0; padding: 22px 18px; border: 1px dashed var(--hair); border-radius: 4px; color: var(--slate); font-size: 15px; text-align: center; }
+.mk-done { display: none; }
+.mk-done .display-m { font-size: clamp(32px, 6vw, 44px); margin: 0 0 14px; }
+.mk-done .body { color: var(--slate); margin: 0 0 24px; }
+.mk-page.is-sent .mk-form { display: none; }
+.mk-page.is-sent .mk-done { display: block; }
+.mk-gets { margin: 0; max-width: 62ch; }
+.mk-gets strong { font-weight: 500; }
+.mk-proof { max-width: 24ch; font-size: clamp(30px, 6vw, 56px); }
+.mk-page .night .hero-cta { margin-top: 40px; }
+@media (min-width: 720px) {
+  .mk-hero { padding: 88px 0 104px; }
+  .mk-lockup { grid-template-columns: minmax(0, 1.1fr) minmax(320px, .8fr); gap: 72px; }
+}
